@@ -9,7 +9,7 @@ services:
       - .env
     
   web:
-    image: i0ne1y/foodgram_backend
+    image: i0ne1y/foodgram_backend:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -18,9 +18,13 @@ services:
       - db
     env_file:
       - .env
+    environment:
+      - PYTHONPATH=/app
+    command: gunicorn foodgram_backend.wsgi:application -b 0.0.0.0:8000 --log-level=debug
+    working_dir: /app/backend/
 
   frontend:
-    image: i0ne1y/foodgram_frontend
+    image: i0ne1y/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
