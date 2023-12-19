@@ -2,14 +2,14 @@ version: '3.8'
 services:
 
   db:
-    image: postgres:13.0-alpine
+    image: postgres:13.10
     volumes:
       - db_data:/var/lib/postgresql/data/
     env_file:
       - .env
     
   web:
-    image: i0ne1y/backend
+    image: i0ne1y/foodgram_backend
     restart: always
     volumes:
       - static_value:/app/static/
@@ -20,14 +20,14 @@ services:
       - .env
 
   frontend:
-    image: i0ne1y/frontend
+    image: i0ne1y/foodgram_frontend
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
       - web
 
   nginx:
-    image: nginx:1.21.3-alpine
+    image: nginx:1.22.1
     ports:
       - "80:80"
     volumes:
