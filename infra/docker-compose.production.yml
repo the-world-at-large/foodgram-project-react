@@ -8,7 +8,7 @@ services:
     env_file:
       - .env
     
-  web:
+  backend:
     image: i0ne1y/foodgram_backend:latest
     restart: always
     volumes:
@@ -28,7 +28,7 @@ services:
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
-      - web
+      - backend
 
   nginx:
     image: nginx:1.22.1
@@ -41,7 +41,7 @@ services:
       - static_value:/var/html/static/
       - media_value:/var/html/media/
     depends_on:
-      - web
+      - backend
       - frontend
     restart: always
 
