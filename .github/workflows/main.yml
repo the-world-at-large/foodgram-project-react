@@ -1,4 +1,4 @@
-name: Main foodgram workflow
+name: Main Foodgram Workflow
 
 on:
   push:
@@ -122,7 +122,7 @@ jobs:
           username: ${{ secrets.USER }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           key: ${{ secrets.SSH_KEY }}
-          source: "./infra/docker-compose.production.yml"
+          source: "docker-compose.production.yml"
           target: "foodgram"
           debug: true
       - name: Executing remote ssh commands to deploy
