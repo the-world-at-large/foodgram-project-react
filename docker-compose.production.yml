@@ -1,6 +1,5 @@
 version: '3.8'
 services:
-
   db:
     image: postgres:13.10
     volumes:
@@ -12,8 +11,8 @@ services:
     image: i0ne1y/foodgram_backend:latest
     restart: always
     volumes:
-      - static_value:/app/static/
-      - media_value:/app/media/
+      - static_volume:/app/static/
+      - media_volume:/app/media/
     depends_on:
       - db
     env_file:
@@ -39,6 +38,6 @@ services:
     restart: always
 
 volumes:
-  static_value:
-  media_value:
+  static_volume:
+  media_volume:
   db_data:
