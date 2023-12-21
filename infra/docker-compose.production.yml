@@ -18,10 +18,6 @@ services:
       - db
     env_file:
       - .env
-    environment:
-      - PYTHONPATH=/app/backend
-    command: sh -c "sleep 10 && gunicorn foodgram_backend.wsgi:application -b 0.0.0.0:8000 --log-level=debug"
-    working_dir: /app/backend
 
   frontend:
     image: i0ne1y/foodgram_frontend:latest
