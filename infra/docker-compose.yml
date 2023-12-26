@@ -6,7 +6,7 @@ services:
       context: ../frontend
       dockerfile: Dockerfile
     volumes:
-      - ../frontend/build:/usr/share/nginx/html/
+      - ../frontend/:/app/result_build/
 
   nginx:
     image: nginx:1.22.1
