@@ -11,4 +11,4 @@ COPY . ./
 
 RUN npm run build
 
-CMD cp -r build result_build
+CMD cp -r build /usr/share/nginx/html/
