@@ -55,7 +55,7 @@ jobs:
         with:
           context: frontend/
           push: true
-          tags: brett0n/foodgram_frontend:latest
+          tags: i0ne1y/foodgram_frontend:latest
   
   deploy:
     name: Deploy on Cloud
@@ -72,7 +72,7 @@ jobs:
         script: |
           sudo docker-compose stop
           sudo docker-compose rm -f backend frontend
-          sudo docker image rm brett0n/foodgram_backend brett0n/foodgram_frontend
+          sudo docker image rm i0ne1y/foodgram_backend i0ne1y/foodgram_frontend
           sudo docker-compose pull backend frontend
           rm .env
           touch .env
