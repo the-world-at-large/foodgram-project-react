@@ -2,7 +2,7 @@ version: '3.3'
 services:
 
   frontend:
-    image: brett0n/foodgram_frontend:latest
+    image: i0ne1y/foodgram_frontend:latest
     volumes:
       - frontend_value:/app/build/
   db:
@@ -12,7 +12,7 @@ services:
     env_file:
       - ./.env
   backend:
-    image: brett0n/foodgram_backend:latest
+    image: i0ne1y/foodgram_backend:latest
     restart: always
     volumes:
       - static_value:/app/static/
