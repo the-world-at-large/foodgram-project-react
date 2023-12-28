@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7"]
+        python-version: ["3.9"]
 
     steps:
     - uses: actions/checkout@v3
@@ -48,7 +48,7 @@ jobs:
         with:
           context: backend/
           push: true
-          tags: brett0n/foodgram_backend:latest
+          tags: i0ne1y/foodgram_backend:latest
 
       - name: Push frontend image to Docker Hub
         uses: docker/build-push-action@v4
