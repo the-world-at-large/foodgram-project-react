@@ -75,8 +75,8 @@ jobs:
           sudo docker-compose rm -f backend frontend
           sudo docker image rm i0ne1y/foodgram_backend i0ne1y/foodgram_frontend
           sudo docker-compose pull backend frontend
-          rm .env
-          touch .env
+          sudo rm .env
+          sudo touch .env
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
           echo DB_NAME=${{ secrets.DB_NAME }} >> .env
           echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
