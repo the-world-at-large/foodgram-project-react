@@ -10,7 +10,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data/
     env_file:
-      - ./.env
+      - .env
   backend:
     image: i0ne1y/foodgram_backend:latest
     restart: always
@@ -20,7 +20,7 @@ services:
     depends_on:
       - db
     env_file:
-      - ./.env
+      - .env
   nginx:
     image: nginx:1.22.1
     ports:
