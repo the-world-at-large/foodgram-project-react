@@ -70,8 +70,8 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             cd foodgram
-            sudo docker compose stop backend
-            sudo docker compose rm -f backend
+            sudo docker-compose stop backend
+            sudo docker-compose rm -f backend
             sudo docker image prune -af
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} > .env
@@ -87,7 +87,6 @@ jobs:
             sudo docker-compose exec backend python manage.py migrate
             sudo docker-compose exec backend python manage.py collectstatic
             sudo docker-compose exec backend cp -r /app/collected_static/. /static/static/
-
 
   send_message:
     runs-on: ubuntu-latest
