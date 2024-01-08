@@ -84,9 +84,9 @@ jobs:
             echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
             echo CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }} >> .env
             sudo docker-compose up -d
-            sudo docker-compose exec backend python manage.py migrate
-            sudo docker-compose exec backend python manage.py collectstatic
-            sudo docker-compose exec backend cp -r /app/collected_static/. /static/static/
+            sudo docker-compose exec -T backend python manage.py migrate
+            sudo docker-compose exec -T backend python manage.py collectstatic
+            sudo docker-compose exec -T backend cp -r /app/collected_static/. /static/static/
 
   send_message:
     runs-on: ubuntu-latest
