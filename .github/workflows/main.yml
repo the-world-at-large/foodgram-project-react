@@ -86,7 +86,6 @@ jobs:
             sudo docker-compose up -d
             sudo docker-compose exec -T backend python manage.py migrate
             sudo docker-compose exec -T backend python manage.py collectstatic --noinput
-            sudo docker-compose exec -T backend cp -r /app/static/. /static/static/
 
   send_message:
     runs-on: ubuntu-latest
