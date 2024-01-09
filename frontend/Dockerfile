@@ -10,5 +10,3 @@ RUN npm install
 COPY . ./
 
 RUN npm run build
-
-CMD cp -r build /usr/share/nginx/html/
