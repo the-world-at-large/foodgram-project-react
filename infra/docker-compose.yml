@@ -27,7 +27,7 @@ services:
   frontend:
     image: i0ne1y/foodgram_frontend:latest
     volumes:
-      - ../frontend/:/app/result_build/
+      - ../frontend/:/usr/share/nginx/html/
     depends_on:
       - backend
 
