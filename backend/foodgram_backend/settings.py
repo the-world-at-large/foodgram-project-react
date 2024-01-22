@@ -11,13 +11,11 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')
 
 DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
 
-if DEBUG:
-    CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*']
-if not DEBUG:
-    CSRF_TRUSTED_ORIGINS = ['http://*.sweetfoodgram.hopto.org', 'https://*.sweetfoodgram.hopto.org']
-
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='django').split()
 
+CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'false').lower() == 'true'
+CSRF_COOKIE_SAMESITE = os.getenv('CSRF_COOKIE_SAMESITE')
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
