@@ -102,6 +102,8 @@ jobs:
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
+            echo CSRF_COOKIE_SECURE=${{ secrets.CSRF_COOKIE_SECURE }} >> .env
+            echo CSRF_COOKIE_SAMESITE=${{ secrets.CSRF_COOKIE_SAMESITE }} >> .env
             echo CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }} >> .env
             sudo docker-compose up -d
             sudo docker-compose exec -T backend python manage.py makemigrations users
