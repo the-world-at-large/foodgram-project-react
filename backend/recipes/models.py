@@ -29,12 +29,11 @@ class Tags(models.Model):
         unique=True,
     )
     color = models.CharField(
-        'Цвет',
         max_length=7,
         choices=COLOR_CHOICES,
         blank=False,
         unique=True,
-        verbose_name="Цвет",
+        verbose_name='Цвет',
         default=RED,
     )
     slug = models.SlugField(
