@@ -8,7 +8,7 @@ from api.serializers import (CreateAndDeleteSubscriptionsSerializer,
                              SetNewPasswordSerializer, ShoppingCartSerializer,
                              SubscriptionsShowSerializer, TagsSerializer,
                              UserCreateSerializer, UserReadSerializer)
-from api.utils import shopping_cart_report, add_link, remove_link
+from api.utils import add_link, remove_link
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
