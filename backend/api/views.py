@@ -160,7 +160,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
                 self,
                 request,
                 FavouritesList,
-                'Рецепт уже добавлен в избранное.'
+                'Рецепт уже добавлен в избранное.',
             )
         elif request.method == 'DELETE':
             return remove_link(

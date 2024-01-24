@@ -19,7 +19,7 @@ class IngredientFilter(filters.FilterSet):
 
 
 class RecipeFilter(filters.FilterSet):
-    """Фильтрация по избранному, автору списку покупок и тегам."""
+    """Фильтрация по избранному, автору, списку покупок и тегам."""
 
     author = filters.ModelChoiceFilter(
         field_name='author',
@@ -50,12 +50,10 @@ class RecipeFilter(filters.FilterSet):
 
     def get_favourite(self, queryset, name, value):
         if value and self.request.user.is_authenticated:
-            return queryset.filter(shopping_list__user=self.request.user)
+            return queryset.filter(favourites__user=self.request.user)
         return queryset
 
     def get_is_in_shopping_cart(self, queryset, name, value):
         if value and self.request.user.is_authenticated:
-            return queryset.filter(
-                shopping_list__user=self.request.user,
-            )
+            return queryset.filter(shopping_list__user=self.request.user)
         return queryset
