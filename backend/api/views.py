@@ -2,7 +2,7 @@ from api.filters import IngredientFilter, RecipeFilter
 from api.mixins import CreateListRetrieveViewSet
 from api.paginators import PageNumberLimitPaginator
 from api.serializers import (CreateAndDeleteSubscriptionsSerializer,
-                             FavouriteRecipesListSerializer,
+                             FavoriteRecipesListSerializer,
                              GetRecipesSerializer, IngredientsSerializer,
                              RecipeCreateAndUpdateSerializer,
                              SetNewPasswordSerializer, ShoppingCartSerializer,
@@ -13,7 +13,7 @@ from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (FavouritesList, Ingredients, Recipes, ShoppingList,
+from recipes.models import (FavoritesList, Ingredients, Recipes, ShoppingList,
                             Tags)
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
@@ -136,8 +136,8 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
             return GetRecipesSerializer
-        elif self.action == 'favourite':
-            return FavouriteRecipesListSerializer
+        elif self.action == 'favorite':
+            return FavoriteRecipesListSerializer
         elif self.action == 'shopping_cart':
             return ShoppingCartSerializer
         return RecipeCreateAndUpdateSerializer
@@ -151,22 +151,22 @@ class RecipesViewSet(viewsets.ModelViewSet):
     @action(
         methods=('post', 'delete',),
         detail=True,
-        serializer_class=FavouriteRecipesListSerializer,
+        serializer_class=FavoriteRecipesListSerializer,
         permission_classes=(IsAuthenticated,),
     )
-    def favourite(self, request):
+    def favorite(self, request):
         if request.method == 'POST':
             return add_link(
                 self,
                 request,
-                FavouritesList,
+                FavoritesList,
                 'Рецепт уже добавлен в избранное.',
             )
         elif request.method == 'DELETE':
             return remove_link(
                 self,
                 request,
-                FavouritesList,
+                FavoritesList,
             )
 
     @action(

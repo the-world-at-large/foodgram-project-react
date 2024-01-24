@@ -199,20 +199,20 @@ class ShoppingList(models.Model):
                 f'из корзины покупок пользователя {self.user}')
 
 
-class FavouritesList(models.Model):
+class FavoritesList(models.Model):
     '''Модель подписок.'''
 
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='user_favourites',
+        related_name='user_favorites',
         verbose_name='Владелец списка избранных рецептов',
     )
     recipe = models.ForeignKey(
         Recipes,
         on_delete=models.CASCADE,
         null=True,
-        related_name='favourites',
+        related_name='favorites',
         verbose_name='Избранные рецепты',
     )
 
@@ -222,7 +222,7 @@ class FavouritesList(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],
-                name='unique_favourites'
+                name='unique_favorites'
             ),
         ]
 
