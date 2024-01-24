@@ -5,7 +5,7 @@ from django.db.models import F
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_base64.fields import Base64ImageField
-from recipes.models import (FavoritesList, Ingredients, RecipeIngredients,
+from recipes.models import (FavouritesList, Ingredients, RecipeIngredients,
                             Recipes, ShoppingList, Tags)
 from rest_framework import serializers
 from users.models import Follow, User
@@ -123,7 +123,7 @@ class GetRecipesSerializer(serializers.ModelSerializer):
     ingredients = GetRecipeIngredientsSerializer(
         many=True, source='recipe_ingredients',
     )
-    is_favorite = serializers.SerializerMethodField()
+    is_favourite = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
     image = Base64ImageField(required=True, allow_null=False)
 
@@ -134,7 +134,7 @@ class GetRecipesSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
-            'is_favorite',
+            'is_favourite',
             'is_in_shopping_cart',
             'name',
             'image',
@@ -142,12 +142,12 @@ class GetRecipesSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
-    def get_is_favorite(self, obj):
+    def get_is_favourite(self, obj):
         request = self.context.get('request')
         user = request.user
         if not request or not user.is_authenticated:
             return False
-        return obj.favorites.filter(user=user).exists()
+        return obj.favourites.filter(user=user).exists()
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
@@ -254,13 +254,13 @@ class RecipeCreateAndUpdateSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class FavoriteRecipesListSerializer(serializers.Serializer):
+class FavouriteRecipesListSerializer(serializers.Serializer):
     """Сериализатор добавления рецепта в избранное."""
 
     def validate(self, data):
         recipe_id = self.context['recipe_id']
         user = self.context['request'].user
-        if FavoritesList.objects.filter(
+        if FavouritesList.objects.filter(
             user=user, recipe_id=recipe_id
         ).exists():
             raise serializers.ValidationError(
@@ -271,7 +271,7 @@ class FavoriteRecipesListSerializer(serializers.Serializer):
     def create(self, validated_data):
         recipe = get_object_or_404(Recipes, pk=validated_data['id'])
         user = self.context['request'].user
-        FavoritesList.objects.create(user=user, recipe=recipe)
+        FavouritesList.objects.create(user=user, recipe=recipe)
         serializer = ShortRecipesShowSerializer(recipe)
         return serializer.data
 

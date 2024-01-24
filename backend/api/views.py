@@ -2,18 +2,18 @@ from api.filters import IngredientFilter, RecipeFilter
 from api.mixins import CreateListRetrieveViewSet
 from api.paginators import PageNumberLimitPaginator
 from api.serializers import (CreateAndDeleteSubscriptionsSerializer,
-                             FavoriteRecipesListSerializer,
+                             FavouriteRecipesListSerializer,
                              GetRecipesSerializer, IngredientsSerializer,
                              RecipeCreateAndUpdateSerializer,
                              SetNewPasswordSerializer, ShoppingCartSerializer,
                              SubscriptionsShowSerializer, TagsSerializer,
                              UserCreateSerializer, UserReadSerializer)
-from api.utils import shopping_cart_report
+from api.utils import shopping_cart_report, add_link, remove_link
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (FavoritesList, Ingredients, Recipes, ShoppingList,
+from recipes.models import (FavouritesList, Ingredients, Recipes, ShoppingList,
                             Tags)
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
@@ -136,8 +136,8 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
             return GetRecipesSerializer
-        elif self.action == 'favorite':
-            return FavoriteRecipesListSerializer
+        elif self.action == 'favourite':
+            return FavouriteRecipesListSerializer
         elif self.action == 'shopping_cart':
             return ShoppingCartSerializer
         return RecipeCreateAndUpdateSerializer
@@ -151,29 +151,22 @@ class RecipesViewSet(viewsets.ModelViewSet):
     @action(
         methods=('post', 'delete',),
         detail=True,
-        serializer_class=FavoriteRecipesListSerializer,
+        serializer_class=FavouriteRecipesListSerializer,
         permission_classes=(IsAuthenticated,),
     )
-    def favorite(self, request, pk=None):
+    def favourite(self, request):
         if request.method == 'POST':
-            serializer = self.get_serializer(
-                data=request.data,
-                context={'request': request, 'recipe_id': pk}
-            )
-            serializer.is_valid(raise_exception=True)
-            response_data = serializer.save(id=pk)
-            return Response(
-                {'message': 'Рецепт успешно добавлен в избранное.',
-                 'data': response_data},
-                status=status.HTTP_201_CREATED
+            return add_link(
+                self,
+                request,
+                FavouritesList,
+                'Рецепт уже добавлен в избранное.'
             )
         elif request.method == 'DELETE':
-            get_object_or_404(
-                FavoritesList, user=request.user,
-                recipe=get_object_or_404(Recipes, pk=pk)).delete()
-            return Response(
-                {'message': 'Рецепт успешно удален из избранного'},
-                status=status.HTTP_204_NO_CONTENT
+            return remove_link(
+                self,
+                request,
+                FavouritesList,
             )
 
     @action(
@@ -182,35 +175,20 @@ class RecipesViewSet(viewsets.ModelViewSet):
         serializer_class=ShoppingCartSerializer,
         permission_classes=(IsAuthenticated,),
     )
-    def shopping_cart(self, request, pk=None):
+    def shopping_cart(self, request):
         if request.method == 'POST':
-            return self.add_recipe_to_cart(request, pk)
+            return add_link(
+                self,
+                request,
+                ShoppingList,
+                'Рецепт уже добавлен в список покупок.'
+            )
         elif request.method == 'DELETE':
-            return self.remove_recipe_from_cart(request, pk)
-
-    def add_recipe_to_cart(self, request, pk):
-        serializer = self.get_serializer(
-            data=request.data,
-            context={'request': request, 'recipe_id': pk}
-        )
-        serializer.is_valid(raise_exception=True)
-        response_data = serializer.save(id=pk)
-        return Response(
-            {'message': 'Рецепт успешно добавлен в список покупок',
-             'data': response_data},
-            status=status.HTTP_201_CREATED
-        )
-
-    def remove_recipe_from_cart(self, request, pk):
-        get_object_or_404(
-            ShoppingList,
-            user=request.user,
-            recipe=get_object_or_404(Recipes, pk=pk)
-        ).delete()
-        return Response(
-            {'message': 'Рецепт успешно удален из списка покупок'},
-            status=status.HTTP_204_NO_CONTENT
-        )
+            return remove_link(
+                self,
+                request,
+                ShoppingList,
+            )
 
     @action(
         detail=False,

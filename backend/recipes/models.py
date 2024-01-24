@@ -8,6 +8,20 @@ User = get_user_model()
 class Tags(models.Model):
     '''Модель тэгов.'''
 
+    RED = "#FF0000"
+    GREEN = "#00FF00"
+    BLUE = "#0000FF"
+    BLACK = "#000000"
+    TORQUOISE = "#00FFFF"
+
+    COLOR_CHOICES = [
+        (RED, "Красный"),
+        (GREEN, "Зелёный"),
+        (BLUE, "Синий"),
+        (BLACK, "Чёрный"),
+        (TORQUOISE, "Торквуаз"),
+    ]
+
     name = models.CharField(
         'Название тэга',
         max_length=200,
@@ -17,8 +31,11 @@ class Tags(models.Model):
     color = models.CharField(
         'Цвет',
         max_length=7,
+        choices=COLOR_CHOICES,
         blank=False,
-        default='#ffffff',
+        unique=True,
+        verbose_name="Цвет",
+        default=RED,
     )
     slug = models.SlugField(
         'Слаг тэга',
@@ -179,23 +196,24 @@ class ShoppingList(models.Model):
         ]
 
     def __str__(self):
-        return f'Рецепт из корзины покупок {self.user}'
+        return (f'Рецепт "{self.recipe.name}" '
+                f'из корзины покупок пользователя {self.user}')
 
 
-class FavoritesList(models.Model):
+class FavouritesList(models.Model):
     '''Модель подписок.'''
 
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='user_favorites',
+        related_name='user_favourites',
         verbose_name='Владелец списка избранных рецептов',
     )
     recipe = models.ForeignKey(
         Recipes,
         on_delete=models.CASCADE,
         null=True,
-        related_name='favorites',
+        related_name='favourites',
         verbose_name='Избранные рецепты',
     )
 
@@ -205,9 +223,10 @@ class FavoritesList(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],
-                name='unique_favorites'
+                name='unique_favourites'
             ),
         ]
 
     def __str__(self):
-        return f'Избранный рецепт {self.user}'
+        return (f'Избранный рецепт "{self.recipe.name}" '
+                f'пользователя {self.user}')
