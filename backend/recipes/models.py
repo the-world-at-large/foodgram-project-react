@@ -19,7 +19,7 @@ class Tags(models.Model):
         (GREEN, "Зелёный"),
         (BLUE, "Синий"),
         (BLACK, "Чёрный"),
-        (TORQUOISE, "Торквуаз"),
+        (TORQUOISE, "Бирюзовый"),
     ]
 
     name = models.CharField(
