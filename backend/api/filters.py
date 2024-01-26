@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django_filters import rest_framework as filters
-from recipes.models import Ingredients, Recipes
+from recipes.models import Ingredients, Recipes, Tags
 
 User = get_user_model()
 
@@ -26,17 +26,19 @@ class RecipeFilter(filters.FilterSet):
         label='Автор',
         queryset=User.objects.all(),
     )
-    is_favorite = filters.BooleanFilter(
+    is_favorited = filters.BooleanFilter(
         method='get_favorite',
         label='Избранные группы',
     )
-    tags = filters.AllValuesMultipleFilter(
+    tags = filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
         label='Тэги',
+        to_field_name='slug',
+        queryset=Tags.objects.all(),
     )
     is_in_shopping_cart = filters.BooleanFilter(
         method='get_is_in_shopping_cart',
-        label='Рецепты в корзине'
+        label='Рецепты в корзине',
     )
 
     class Meta:
@@ -44,7 +46,7 @@ class RecipeFilter(filters.FilterSet):
         fields = (
             'tags',
             'author',
-            'is_favorite',
+            'is_favorited',
             'is_in_shopping_cart',
         )
 

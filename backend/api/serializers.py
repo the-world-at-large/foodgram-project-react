@@ -123,7 +123,7 @@ class GetRecipesSerializer(serializers.ModelSerializer):
     ingredients = GetRecipeIngredientsSerializer(
         many=True, source='recipe_ingredients',
     )
-    is_favorite = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
     image = Base64ImageField(required=True, allow_null=False)
 
@@ -134,7 +134,7 @@ class GetRecipesSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
-            'is_favorite',
+            'is_favorited',
             'is_in_shopping_cart',
             'name',
             'image',
@@ -142,7 +142,7 @@ class GetRecipesSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
-    def get_is_favorite(self, obj):
+    def get_is_favorited(self, obj):
         request = self.context.get('request')
         user = request.user
         if not request or not user.is_authenticated:
