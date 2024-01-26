@@ -154,19 +154,21 @@ class RecipesViewSet(viewsets.ModelViewSet):
         serializer_class=FavoriteRecipesListSerializer,
         permission_classes=(IsAuthenticated,),
     )
-    def favorite(self, request):
+    def favorite(self, request, pk):
         if request.method == 'POST':
             return add_link(
                 self,
                 request,
                 FavoritesList,
                 'Рецепт уже добавлен в избранное.',
+                pk,
             )
         elif request.method == 'DELETE':
             return remove_link(
                 self,
                 request,
                 FavoritesList,
+                pk,
             )
 
     @action(
@@ -175,19 +177,21 @@ class RecipesViewSet(viewsets.ModelViewSet):
         serializer_class=ShoppingCartSerializer,
         permission_classes=(IsAuthenticated,),
     )
-    def shopping_cart(self, request):
+    def shopping_cart(self, request, pk):
         if request.method == 'POST':
             return add_link(
                 self,
                 request,
                 ShoppingList,
-                'Рецепт уже добавлен в список покупок.'
+                'Рецепт уже добавлен в список покупок.',
+                pk,
             )
         elif request.method == 'DELETE':
             return remove_link(
                 self,
                 request,
                 ShoppingList,
+                pk,
             )
 
     @action(

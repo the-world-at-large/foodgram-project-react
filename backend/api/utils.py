@@ -39,10 +39,10 @@ def shopping_cart_report(shopping_cart):
     return buy_list_text
 
 
-def add_link(self, request, model, error_message):
+def add_link(self, request, model, error_message, pk):
     '''Добавление связи.'''
 
-    recipe = get_object_or_404(Recipes, id=self.kwargs.get('recipe_id'))
+    recipe = get_object_or_404(Recipes, pk=pk)
     _, with_relation = model.objects.get_or_create(
         user=request.user,
         recipe=recipe,
@@ -62,10 +62,10 @@ def add_link(self, request, model, error_message):
     )
 
 
-def remove_link(self, request, model):
+def remove_link(self, request, model, pk):
     '''Удаление связи.'''
 
-    recipe = get_object_or_404(Recipes, id=self.kwargs.get('recipe_id'))
+    recipe = get_object_or_404(Recipes, pk=pk)
     relation = get_object_or_404(
         model,
         recipe=recipe,
