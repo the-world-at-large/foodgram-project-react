@@ -8,13 +8,13 @@ from rest_framework.response import Response
 def shopping_cart_report(user):
     '''Обработчик списка покупок.'''
     # Получаем все рецепты, добавленные в корзину покупок данного пользователя.
-    shopping_cart_recipes = ShoppingList.objects.filter(
+    shopping_cart_recipe = ShoppingList.objects.filter(
         user=user).values_list('recipes', flat=True)
 
     # Получаем суммарное количество каждого ингредиента
     # из всех рецептов в корзине покупок.
     ingredient_totals = RecipeIngredients.objects.filter(
-        recipe__in=shopping_cart_recipes)\
+        recipe__in=shopping_cart_recipe)\
         .values('ingredient__name', 'ingredient__measurement_unit')\
         .annotate(total_amount=Sum('amount'))\
         .order_by('ingredient__name')
