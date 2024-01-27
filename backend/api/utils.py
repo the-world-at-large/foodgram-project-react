@@ -9,7 +9,7 @@ def shopping_cart_report(user):
     '''Обработчик списка покупок.'''
     # Получаем все рецепты, добавленные в корзину покупок данного пользователя.
     shopping_cart_recipes = ShoppingList.objects.filter(
-        user=user).values_list('recipes', flat=True)
+        user=user).values_list('recipe', flat=True)
 
     # Получаем суммарное количество каждого ингредиента
     # из всех рецептов в корзине покупок.
