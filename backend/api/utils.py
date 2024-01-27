@@ -1,8 +1,6 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
-from recipes.models import (Ingredients, RecipeIngredients,
-                            Recipes, ShoppingList)
+from recipes.models import RecipeIngredients, Recipes, ShoppingList
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -27,7 +25,8 @@ def shopping_cart_report(user):
         ingredient_name = ingredient_total['ingredient__name']
         measurement_unit = ingredient_total['ingredient__measurement_unit']
         total_amount = ingredient_total['total_amount']
-        buy_list_text += f'{ingredient_name}, {total_amount} {measurement_unit}\n'
+        buy_list_text += (f'{ingredient_name}, '
+                          f'{total_amount} {measurement_unit}\n')
 
     return buy_list_text
 
