@@ -1,40 +1,33 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
-from recipes.models import Ingredients, RecipeIngredients, Recipes
+from recipes.models import (Ingredients, RecipeIngredients,
+                            Recipes, ShoppingList)
 from rest_framework import status
 from rest_framework.response import Response
 
 
-def shopping_cart_report(shopping_cart):
-    """Обработчик списка покупок."""
-    try:
-        recipes = Recipes.objects.filter(pk__in=shopping_cart)
-    except Recipes.DoesNotExist:
-        # Обработка случая, когда один или несколько рецептов не найдены.
-        return 'Некоторые рецепты из корзины покупок недоступны.'
+def shopping_cart_report(user):
+    '''Обработчик списка покупок.'''
+    # Получаем все рецепты, добавленные в корзину покупок данного пользователя.
+    shopping_cart_recipes = ShoppingList.objects.filter(
+        user=user).values_list('recipes', flat=True)
 
-    buy_list = RecipeIngredients.objects.filter(
-        recipe__in=recipes
-    ).values(
-        'ingredient'
-    ).annotate(
-        amount=Sum('amount')
-    )
+    # Получаем суммарное количество каждого ингредиента
+    # из всех рецептов в корзине покупок.
+    ingredient_totals = RecipeIngredients.objects.filter(
+        recipe__in=shopping_cart_recipes)\
+        .values('ingredient__name', 'ingredient__measurement_unit')\
+        .annotate(total_amount=Sum('amount'))\
+        .order_by('ingredient__name')
 
+    # Формируем текст списка покупок.
     buy_list_text = 'Foodgram\nКорзина покупок:\n'
-
-    for item in buy_list:
-        try:
-            ingredient = Ingredients.objects.get(pk=item['ingredient'])
-            amount = item['amount']
-            buy_list_text += (
-                f'{ingredient.name}, {amount} '
-                f'{ingredient.measurement_unit}\n'
-            )
-        except ObjectDoesNotExist:
-            # Обработка случая, когда ингредиент не найден.
-            return 'Некоторые ингредиенты из корзины покупок недоступны.'
+    for ingredient_total in ingredient_totals:
+        ingredient_name = ingredient_total['ingredient__name']
+        measurement_unit = ingredient_total['ingredient__measurement_unit']
+        total_amount = ingredient_total['total_amount']
+        buy_list_text += f'{ingredient_name}, {total_amount} {measurement_unit}\n'
 
     return buy_list_text
 
