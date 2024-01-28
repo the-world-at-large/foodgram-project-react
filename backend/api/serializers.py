@@ -296,9 +296,8 @@ class CreateAndDeleteSubscriptionsSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context['request'].user
         author = validated_data['author']
-        subscription = Follow.objects.create(user=user, author=author)
 
-        return subscription
+        return Follow.objects.create(user=user, author=author)
 
 
 class BaseItemOperationSerializer(serializers.Serializer):
