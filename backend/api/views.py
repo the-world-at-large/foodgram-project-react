@@ -2,24 +2,28 @@ from api.filters import IngredientFilter, RecipeFilter
 from api.mixins import CreateListRetrieveViewSet
 from api.paginators import PageNumberLimitPaginator
 from api.serializers import (CreateAndDeleteSubscriptionsSerializer,
-                             FavoriteRecipesListSerializer,
+                             AddFavoriteRecipeSerializer,
                              GetRecipesSerializer, IngredientsSerializer,
                              RecipeCreateAndUpdateSerializer,
                              SetNewPasswordSerializer, ShoppingCartSerializer,
                              SubscriptionsShowSerializer, TagsSerializer,
                              UserCreateSerializer, UserReadSerializer)
 from api.utils import add_link, remove_link, shopping_cart_report
+
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+
 from recipes.models import (FavoritesList, Ingredients, Recipes, ShoppingList,
                             Tags)
+
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
+
 from users.models import Follow
 
 User = get_user_model()
@@ -35,9 +39,9 @@ class UsersViewSet(CreateListRetrieveViewSet):
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
             return UserReadSerializer
-        elif self.action == 'set_password':
+        if self.action == 'set_password':
             return SetNewPasswordSerializer
-        elif self.action == 'subscribe':
+        if self.action == 'subscribe':
             return CreateAndDeleteSubscriptionsSerializer
         return UserCreateSerializer
 
@@ -65,7 +69,7 @@ class UsersViewSet(CreateListRetrieveViewSet):
         if not user.check_password(old_password):
             return Response(
                 {'error': 'Неверный пароль'},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
         user.set_password(new_password)
         user.save()
@@ -81,20 +85,19 @@ class UsersViewSet(CreateListRetrieveViewSet):
     )
     def subscriptions(self, request):
         user = request.user
-        subscriptions = user.follower.all()
-        users_id = subscriptions.values_list('author_id', flat=True)
-        users = User.objects.filter(id__in=users_id)
-        paginated_queryset = self.paginate_queryset(users)
+        subscriptions = user.follower.all().select_related('author')
+        paginated_queryset = self.paginate_queryset(subscriptions)
         serializer = self.serializer_class(paginated_queryset,
                                            context={'request': request},
                                            many=True)
         return self.get_paginated_response(serializer.data)
 
-    @action(detail=True,
-            methods=('post', 'delete'),
-            serializer_class=CreateAndDeleteSubscriptionsSerializer,
-            permission_classes=(IsAuthenticated,),
-            )
+    @action(
+        detail=True,
+        methods=('post', 'delete'),
+        serializer_class=CreateAndDeleteSubscriptionsSerializer,
+        permission_classes=(IsAuthenticated,),
+    )
     def subscribe(self, request, pk=None):
         if request.method == 'POST':
             serializer = self.get_serializer(
@@ -106,17 +109,17 @@ class UsersViewSet(CreateListRetrieveViewSet):
             return Response(
                 {'message': 'Подписка успешно создана',
                  'data': response_data},
-                status=status.HTTP_201_CREATED
+                status=status.HTTP_201_CREATED,
             )
-        elif request.method == 'DELETE':
+        else:
             subscription = get_object_or_404(
                 Follow, user=request.user,
-                author=get_object_or_404(User, pk=pk)
+                author=get_object_or_404(User, pk=pk),
             )
             subscription.delete()
             return Response(
                 {'message': 'Успешно отписан'},
-                status=status.HTTP_204_NO_CONTENT
+                status=status.HTTP_204_NO_CONTENT,
             )
 
 
@@ -136,8 +139,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
             return GetRecipesSerializer
-        elif self.action == 'favorite':
-            return FavoriteRecipesListSerializer
         elif self.action == 'shopping_cart':
             return ShoppingCartSerializer
         return RecipeCreateAndUpdateSerializer
@@ -151,7 +152,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
     @action(
         methods=('post', 'delete',),
         detail=True,
-        serializer_class=FavoriteRecipesListSerializer,
+        serializer_class=AddFavoriteRecipeSerializer,
         permission_classes=(IsAuthenticated,),
     )
     def favorite(self, request, pk):

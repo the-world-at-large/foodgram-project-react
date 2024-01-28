@@ -1,4 +1,6 @@
+from django import forms
 from django.contrib import admin
+
 from recipes.models import (FavoritesList, Ingredients, RecipeIngredients,
                             Recipes, ShoppingList, Tags)
 
@@ -9,12 +11,24 @@ class RecipeIngredientInline(admin.TabularInline):
     min_num = 1
 
 
+class RecipeAdminForm(forms.ModelForm):
+    class Meta:
+        model = Recipes
+        fileds = '__all__'
+
+    def clean(self):
+        title = self.cleaned_data['title']
+        if not title.istitle():
+            raise forms.ValidationError({'title': "Неподходящее значение."})
+
+
 class RecipeAdmin(admin.ModelAdmin):
+    form = RecipeAdminForm
+
     inlines = [RecipeIngredientInline]
     list_display = ('name', 'author', 'favorites_count')
     search_fields = ('name',)
     list_filter = ('name', 'author', 'tags')
-    exclude = ('ingredients',)
 
     def favorites_count(self, obj):
         return obj.favorites.count()

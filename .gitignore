@@ -131,5 +131,5 @@ dmypy.json
 # .idea
 .idea
 
-# Migrations
-migrations
+# local docker-compose.yml
+local-docker-compose.yml

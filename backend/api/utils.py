@@ -7,19 +7,17 @@ from rest_framework.response import Response
 
 def shopping_cart_report(user):
     '''Обработчик списка покупок.'''
-    # Получаем все рецепты, добавленные в корзину покупок данного пользователя.
     shopping_cart_recipes = ShoppingList.objects.filter(
         user=user).values_list('recipe', flat=True)
 
-    # Получаем суммарное количество каждого ингредиента
-    # из всех рецептов в корзине покупок.
     ingredient_totals = RecipeIngredients.objects.filter(
-        recipe__in=shopping_cart_recipes)\
-        .values('ingredient__name', 'ingredient__measurement_unit')\
-        .annotate(total_amount=Sum('amount'))\
-        .order_by('ingredient__name')
+        recipe__in=shopping_cart_recipes,
+    ).values(
+        'ingredient__name', 'ingredient__measurement_unit',
+    ).annotate(
+        total_amount=Sum('amount')
+    ).order_by('ingredient__name')
 
-    # Формируем текст списка покупок.
     buy_list_text = 'Foodgram\nКорзина покупок:\n'
     for ingredient_total in ingredient_totals:
         ingredient_name = ingredient_total['ingredient__name']
