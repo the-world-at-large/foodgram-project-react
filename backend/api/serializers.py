@@ -106,7 +106,7 @@ class GetRecipeIngredientsSerializer(serializers.ModelSerializer):
 class GetRecipesSerializer(serializers.ModelSerializer):
     """Получение списка рецептов."""
 
-    author = UserReadSerializer( 
+    author = UserReadSerializer(
         read_only=True,
         default=serializers.CurrentUserDefault(),
     )
@@ -117,8 +117,8 @@ class GetRecipesSerializer(serializers.ModelSerializer):
     ingredients = GetRecipeIngredientsSerializer(
         many=True, source='recipe_ingredients',
     )
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
+    is_favorited = serializers.BooleanField(read_only=True)
+    is_in_shopping_cart = serializers.BooleanField(read_only=True)
     image = Base64ImageField(required=True, allow_null=False)
 
     class Meta:
@@ -135,23 +135,6 @@ class GetRecipesSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time',
         )
-
-    def get_is_favorited(self, obj):
-        request = self.context.get('request')
-        user = request.user
-        if not request or not user.is_authenticated:
-            return False
-        return obj.favorites.filter(user=user).exists()
-
-    def get_is_in_shopping_cart(self, obj):
-        request = self.context.get('request')
-        user = request.user
-        if not request or not user.is_authenticated:
-            return False
-        shopping_list = ShoppingCart.objects.filter(
-            user=user, recipe=obj,
-        )
-        return shopping_list.exists()
 
 
 class AddRecipeIngredientsSerializer(serializers.ModelSerializer):
