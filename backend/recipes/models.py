@@ -1,30 +1,35 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, validate_slug
 from django.db import models
+from django.db.models import Exists, OuterRef
+
+from recipes.constants import (
+    MAX_LENGTH_NAME, MAX_LENGTH_MEASUREMENT_UNIT, MIN_COOKING_TIME
+)
 
 User = get_user_model()
 
 
 class Tags(models.Model):
-    '''Модель тэгов.'''
+    """Модель тэгов."""
 
-    RED = "#FF0000"
-    GREEN = "#00FF00"
-    BLUE = "#0000FF"
-    BLACK = "#000000"
-    TORQUOISE = "#00FFFF"
+    RED = '#FF0000'
+    GREEN = '#00FF00'
+    BLUE = '#0000FF'
+    BLACK = '#000000'
+    TORQUOISE = '#00FFFF'
 
     COLOR_CHOICES = [
-        (RED, "Красный"),
-        (GREEN, "Зелёный"),
-        (BLUE, "Синий"),
-        (BLACK, "Чёрный"),
-        (TORQUOISE, "Бирюзовый"),
+        (RED, 'Красный'),
+        (GREEN, 'Зелёный'),
+        (BLUE, 'Синий'),
+        (BLACK, 'Чёрный'),
+        (TORQUOISE, 'Бирюзовый'),
     ]
 
     name = models.CharField(
         'Название тэга',
-        max_length=200,
+        max_length=MAX_LENGTH_NAME,
         blank=False,
         unique=True,
     )
@@ -48,21 +53,22 @@ class Tags(models.Model):
     class Meta:
         verbose_name = 'Тэг'
         verbose_name_plural = 'Тэги'
+        ordering = ['name']
 
     def __str__(self):
         return self.name
 
 
 class Ingredients(models.Model):
-    '''Модель ингредиентов.'''
+    """Модель ингредиентов."""
 
     name = models.CharField(
         'Название ингредиента',
-        max_length=200,
+        max_length=MAX_LENGTH_NAME,
         blank=False,
     )
     measurement_unit = models.CharField(
-        max_length=200,
+        max_length=MAX_LENGTH_MEASUREMENT_UNIT,
         blank=False,
         verbose_name='Единица измерения',
     )
@@ -71,13 +77,14 @@ class Ingredients(models.Model):
         ordering = ('name',)
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
+        unique_together = ['name', 'measurement_unit']
 
     def __str__(self):
         return self.name
 
 
 class Recipes(models.Model):
-    '''Модель рецептов.'''
+    """Модель рецептов."""
 
     author = models.ForeignKey(
         User,
@@ -122,7 +129,7 @@ class Recipes(models.Model):
         blank=False,
         validators=[
             MinValueValidator(
-                1,
+                MIN_COOKING_TIME,
                 'Время приготовления должно быть больше 1'
             )
         ],
@@ -141,9 +148,29 @@ class Recipes(models.Model):
     def __str__(self):
         return self.name
 
+    @staticmethod
+    def with_is_favorited(user):
+        return Recipes.objects.annotate(is_favorited=Exists(
+            Favorite.objects.filter(recipe=OuterRef('pk'), user=user)))
+
+    @staticmethod
+    def with_is_in_shopping_cart(user):
+        return Recipes.objects.annotate(is_in_shopping_cart=Exists(
+            ShoppingCart.objects.filter(recipe=OuterRef('pk'), user=user)))
+
+    def is_favorited(self, user):
+        if user and user.is_authenticated:
+            return self.is_favorited
+        return False
+
+    def is_in_shopping_cart(self, user):
+        if user and user.is_authenticated:
+            return self.is_in_shopping_cart
+        return False
+
 
 class RecipeIngredients(models.Model):
-    '''Модель ингредиентов рецепта.'''
+    """Модель ингредиентов рецепта."""
 
     recipe = models.ForeignKey(
         Recipes,
@@ -167,8 +194,8 @@ class RecipeIngredients(models.Model):
         verbose_name_plural = 'Ингредиенты в рецепте'
 
 
-class ShoppingList(models.Model):
-    '''Модель добавления рецептов в корзину.'''
+class ShoppingCart(models.Model):
+    """Модель добавления рецептов в корзину."""
 
     user = models.ForeignKey(
         User,
@@ -199,8 +226,8 @@ class ShoppingList(models.Model):
                 f'из корзины покупок пользователя {self.user}')
 
 
-class FavoritesList(models.Model):
-    '''Модель подписок.'''
+class Favorite(models.Model):
+    """Модель подписки."""
 
     user = models.ForeignKey(
         User,

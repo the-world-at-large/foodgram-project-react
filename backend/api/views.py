@@ -1,30 +1,30 @@
-from api.filters import IngredientFilter, RecipeFilter
-from api.mixins import CreateListRetrieveViewSet
-from api.paginators import PageNumberLimitPaginator
-from api.serializers import (CreateAndDeleteSubscriptionsSerializer,
-                             AddFavoriteRecipeSerializer,
-                             GetRecipesSerializer, IngredientsSerializer,
-                             RecipeCreateAndUpdateSerializer,
-                             SetNewPasswordSerializer, ShoppingCartSerializer,
-                             SubscriptionsShowSerializer, TagsSerializer,
-                             UserCreateSerializer, UserReadSerializer)
-from api.utils import add_link, remove_link, shopping_cart_report
-
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 
-from recipes.models import (FavoritesList, Ingredients, Recipes, ShoppingList,
-                            Tags)
-
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import (AllowAny, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import (
+    AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+)
 from rest_framework.response import Response
 
-from users.models import Follow
+from api.filters import IngredientFilter, RecipeFilter
+from api.mixins import CreateListRetrieveViewSet
+from api.paginators import PageNumberLimitPaginator
+from api.serializers import (
+    CreateAndDeleteSubscriptionsSerializer, AddFavoriteRecipeSerializer,
+    GetRecipesSerializer, IngredientsSerializer,
+    RecipeCreateAndUpdateSerializer, SetNewPasswordSerializer,
+    ShoppingCartSerializer, SubscriptionsShowSerializer, TagsSerializer,
+    UserCreateSerializer, UserReadSerializer
+)
+from api.utils import add_link, remove_link, shopping_cart_report
+
+from recipes.models import (
+    Favorite, Ingredients, Recipes, ShoppingCart, Tags
+)
 
 User = get_user_model()
 
@@ -160,7 +160,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
             return add_link(
                 self,
                 request,
-                FavoritesList,
+                Favorite,
                 'Рецепт уже добавлен в избранное.',
                 pk,
             )
@@ -168,7 +168,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
             return remove_link(
                 self,
                 request,
-                FavoritesList,
+                Favorite,
                 pk,
             )
 
@@ -183,7 +183,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
             return add_link(
                 self,
                 request,
-                ShoppingList,
+                ShoppingCart,
                 'Рецепт уже добавлен в список покупок.',
                 pk,
             )
@@ -191,7 +191,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
             return remove_link(
                 self,
                 request,
-                ShoppingList,
+                ShoppingCart,
                 pk,
             )
 

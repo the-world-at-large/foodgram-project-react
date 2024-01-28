@@ -1,8 +1,10 @@
 from django import forms
 from django.contrib import admin
 
-from recipes.models import (FavoritesList, Ingredients, RecipeIngredients,
-                            Recipes, ShoppingList, Tags)
+from recipes.models import (
+    Favorite, Ingredients, RecipeIngredients,
+    Recipes, ShoppingCart, Tags
+)
 
 
 class RecipeIngredientInline(admin.TabularInline):
@@ -17,9 +19,14 @@ class RecipeAdminForm(forms.ModelForm):
         fileds = '__all__'
 
     def clean(self):
-        title = self.cleaned_data['title']
-        if not title.istitle():
-            raise forms.ValidationError({'title': "Неподходящее значение."})
+        cleaned_data = super().clean()
+        title = cleaned_data.get('title')
+
+        if title and not title.istitle():
+            raise forms.ValidationError(
+                {'title': "Название должно начинаться с заглавной буквы."})
+
+        return cleaned_data
 
 
 class RecipeAdmin(admin.ModelAdmin):
@@ -50,5 +57,5 @@ class TagAdmin(admin.ModelAdmin):
 admin.site.register(Recipes, RecipeAdmin)
 admin.site.register(Ingredients, IngredientAdmin)
 admin.site.register(Tags, TagAdmin)
-admin.site.register(FavoritesList)
-admin.site.register(ShoppingList)
+admin.site.register(Favorite)
+admin.site.register(ShoppingCart)

@@ -1,7 +1,7 @@
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 
-from recipes.models import RecipeIngredients, Recipes, ShoppingList
+from recipes.models import RecipeIngredients, Recipes, ShoppingCart
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 def shopping_cart_report(user):
     '''Обработчик списка покупок.'''
-    shopping_cart_recipes = ShoppingList.objects.filter(
+    shopping_cart_recipes = ShoppingCart.objects.filter(
         user=user).values_list('recipe', flat=True)
 
     ingredient_totals = RecipeIngredients.objects.filter(

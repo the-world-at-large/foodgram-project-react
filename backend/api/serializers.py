@@ -4,10 +4,12 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_base64.fields import Base64ImageField
-from recipes.models import (FavoritesList, Ingredients, RecipeIngredients,
-                            Recipes, ShoppingList, Tags)
 from rest_framework import serializers
 
+from recipes.models import (
+    Favorite, Ingredients, RecipeIngredients,
+    Recipes, ShoppingCart, Tags
+)
 from users.models import Follow, User
 
 
@@ -115,8 +117,8 @@ class GetRecipesSerializer(serializers.ModelSerializer):
     ingredients = GetRecipeIngredientsSerializer(
         many=True, source='recipe_ingredients',
     )
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
+    is_favorited = serializers.BooleanField(read_only=True)
+    is_in_shopping_cart = serializers.BooleanField(read_only=True)
     image = Base64ImageField(required=True, allow_null=False)
 
     class Meta:
@@ -134,6 +136,16 @@ class GetRecipesSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
+        def to_representation(self, instance):
+            request = self.context.get('request')
+            user = (request.user if request
+                    and request.user.is_authenticated else None)
+
+            data = super().to_representation(instance)
+            data['is_favorited'] = instance.is_favorited(user)
+            data['is_in_shopping_cart'] = instance.is_in_shopping_cart(user)
+            return data
+
     def get_is_favorited(self, obj):
         request = self.context.get('request')
         user = request.user
@@ -146,7 +158,7 @@ class GetRecipesSerializer(serializers.ModelSerializer):
         user = request.user
         if not request or not user.is_authenticated:
             return False
-        shopping_list = ShoppingList.objects.filter(
+        shopping_list = ShoppingCart.objects.filter(
             user=user, recipe=obj,
         )
         return shopping_list.exists()
@@ -315,7 +327,7 @@ class AddFavoriteRecipeSerializer(BaseItemOperationSerializer):
     """Сериализатор добавления рецепта в избранное."""
 
     class Meta:
-        model = FavoritesList
+        model = Favorite
         item_model = Recipes
         item_serializer = ShortRecipesShowSerializer
 
@@ -324,6 +336,6 @@ class ShoppingCartSerializer(BaseItemOperationSerializer):
     """Сериализатор добавления и удаления рецептов из корзины покупок."""
 
     class Meta:
-        model = ShoppingList
+        model = ShoppingCart
         item_model = Recipes
         item_serializer = ShortRecipesShowSerializer
