@@ -25,6 +25,7 @@ from api.utils import add_link, remove_link, shopping_cart_report
 from recipes.models import (
     Favorite, Ingredients, Recipes, ShoppingCart, Tags
 )
+from users.models import Follow
 
 User = get_user_model()
 
@@ -111,16 +112,15 @@ class UsersViewSet(CreateListRetrieveViewSet):
                  'data': response_data},
                 status=status.HTTP_201_CREATED,
             )
-        else:
-            subscription = get_object_or_404(
-                Follow, user=request.user,
-                author=get_object_or_404(User, pk=pk),
-            )
-            subscription.delete()
-            return Response(
-                {'message': 'Успешно отписан'},
-                status=status.HTTP_204_NO_CONTENT,
-            )
+        subscription = get_object_or_404(
+            Follow, user=request.user,
+            author=get_object_or_404(User, pk=pk),
+        )
+        subscription.delete()
+        return Response(
+            {'message': 'Успешно отписан'},
+            status=status.HTTP_204_NO_CONTENT,
+        )
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
@@ -139,7 +139,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
             return GetRecipesSerializer
-        elif self.action == 'shopping_cart':
+        if self.action == 'shopping_cart':
             return ShoppingCartSerializer
         return RecipeCreateAndUpdateSerializer
 
@@ -164,7 +164,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
                 'Рецепт уже добавлен в избранное.',
                 pk,
             )
-        elif request.method == 'DELETE':
+        if request.method == 'DELETE':
             return remove_link(
                 self,
                 request,
@@ -187,7 +187,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
                 'Рецепт уже добавлен в список покупок.',
                 pk,
             )
-        elif request.method == 'DELETE':
+        if request.method == 'DELETE':
             return remove_link(
                 self,
                 request,
