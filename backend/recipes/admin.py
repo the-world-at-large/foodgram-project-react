@@ -16,7 +16,7 @@ class RecipeIngredientInline(admin.TabularInline):
 class RecipeAdminForm(forms.ModelForm):
     class Meta:
         model = Recipes
-        fileds = '__all__'
+        fields = '__all__'
 
     def clean(self):
         cleaned_data = super().clean()

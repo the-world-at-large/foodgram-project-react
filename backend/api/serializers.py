@@ -106,7 +106,7 @@ class GetRecipeIngredientsSerializer(serializers.ModelSerializer):
 class GetRecipesSerializer(serializers.ModelSerializer):
     """Получение списка рецептов."""
 
-    author = UserReadSerializer(
+    author = UserReadSerializer( 
         read_only=True,
         default=serializers.CurrentUserDefault(),
     )
@@ -117,8 +117,8 @@ class GetRecipesSerializer(serializers.ModelSerializer):
     ingredients = GetRecipeIngredientsSerializer(
         many=True, source='recipe_ingredients',
     )
-    is_favorited = serializers.BooleanField(read_only=True)
-    is_in_shopping_cart = serializers.BooleanField(read_only=True)
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
     image = Base64ImageField(required=True, allow_null=False)
 
     class Meta:
@@ -135,16 +135,6 @@ class GetRecipesSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time',
         )
-
-        def to_representation(self, instance):
-            request = self.context.get('request')
-            user = (request.user if request
-                    and request.user.is_authenticated else None)
-
-            data = super().to_representation(instance)
-            data['is_favorited'] = instance.is_favorited(user)
-            data['is_in_shopping_cart'] = instance.is_in_shopping_cart(user)
-            return data
 
     def get_is_favorited(self, obj):
         request = self.context.get('request')

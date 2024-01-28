@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, validate_slug
 from django.db import models
-from django.db.models import Exists, OuterRef
 
 from recipes.constants import (
     MAX_LENGTH_NAME, MAX_LENGTH_MEASUREMENT_UNIT, MIN_COOKING_TIME
@@ -46,7 +45,7 @@ class Tags(models.Model):
         unique=True,
         blank=False,
         validators=[
-            validate_slug
+            validate_slug,
         ],
     )
 
@@ -147,26 +146,6 @@ class Recipes(models.Model):
 
     def __str__(self):
         return self.name
-
-    @staticmethod
-    def with_is_favorited(user):
-        return Recipes.objects.annotate(is_favorited=Exists(
-            Favorite.objects.filter(recipe=OuterRef('pk'), user=user)))
-
-    @staticmethod
-    def with_is_in_shopping_cart(user):
-        return Recipes.objects.annotate(is_in_shopping_cart=Exists(
-            ShoppingCart.objects.filter(recipe=OuterRef('pk'), user=user)))
-
-    def is_favorited(self, user):
-        if user and user.is_authenticated:
-            return self.is_favorited
-        return False
-
-    def is_in_shopping_cart(self, user):
-        if user and user.is_authenticated:
-            return self.is_in_shopping_cart
-        return False
 
 
 class RecipeIngredients(models.Model):
