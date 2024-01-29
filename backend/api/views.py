@@ -154,14 +154,19 @@ class RecipesViewSet(viewsets.ModelViewSet):
                     user=self.request.user,
                     recipe=OuterRef('id')))
         ).select_related('author').prefetch_related(
-            'tags', 'ingredients', 'recipe',
-            'shopping_cart', 'favorite_recipe',
+            'tags',
+            'ingredients',
+            'shopping_list',
+            'favorites',
         ) if self.request.user.is_authenticated else Recipes.objects.annotate(
             is_in_shopping_cart=Value(False),
             is_favorited=Value(False),
         ).select_related('author').prefetch_related(
-            'tags', 'ingredients', 'recipe',
-            'shopping_cart', 'favorite_recipe')
+            'tags',
+            'ingredients',
+            'shopping_list',
+            'favorites',
+        )
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
