@@ -155,7 +155,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
                     recipe=OuterRef('id')))
         ).select_related('author').prefetch_related(
             'tags', 'ingredients', 'recipe',
-            'shopping_cart', 'favorite_recipe'
+            'shopping_cart', 'favorite_recipe',
         ) if self.request.user.is_authenticated else Recipes.objects.annotate(
             is_in_shopping_cart=Value(False),
             is_favorited=Value(False),

@@ -1,7 +1,5 @@
 # Foodgram
 
-![Foodgram Logo](link_to_your_logo)
-
 Foodgram - это онлайн-сервис для создания, поиска и сохранения рецептов. Здесь вы можете найти разнообразные блюда, добавить их в избранное, а также поделиться своими кулинарными шедеврами с другими пользователями.
 
 ## Содержание
@@ -18,45 +16,39 @@ Foodgram - это онлайн-сервис для создания, поиск�
 
 1. Клонируйте репозиторий на локальную машину:
 
-git clone https://github.com/your_username/foodgram.git
-
-markdown
-Copy code
+    ```
+    git clone https://github.com/your_usernam/foodgram.git
+    ```
 
 2. Перейдите в папку проекта:
 
-cd foodgram
-
-markdown
-Copy code
+    ```
+    cd foodgram
+    ```
 
 3. Установите зависимости из файла requirements.txt:
 
-pip install -r requirements.txt
-
-markdown
-Copy code
+    ```
+    pip install -r requirements.txt
+    ```
 
 4. Примените миграции:
 
-python manage.py migrate
-
-markdown
-Copy code
+    ```
+    python manage.py migrate
+    ```
 
 5. Создайте суперпользователя:
 
-python manage.py createsuperuser
-
-markdown
-Copy code
+    ```
+    python manage.py createsuperuser
+    ```
 
 6. Запустите сервер разработки:
 
-python manage.py runserver
-
-markdown
-Copy code
+    ```
+    python manage.py runserver
+    ```
 
 Теперь вы можете открыть [localhost:8000](http://localhost:8000) в вашем браузере и начать использовать Foodgram!
 
@@ -74,39 +66,34 @@ Foodgram - это платформа для обмена рецептами и �
 1. Установите Docker и Docker Compose на вашем компьютере.
 2. Склонируйте репозиторий на вашу локальную машину:
 
-git clone https://github.com/your_username/foodgram.git
-
-markdown
-Copy code
+    ```
+    git clone https://github.com/your_username/foodgram.git
+    ```
 
 3. Перейдите в папку проекта:
 
-cd foodgram
-
-markdown
-Copy code
+    ```
+    cd foodgram
+    ```
 
 4. Создайте файл .env и заполните его данными, указанными в примере ниже.
 5. Запустите Docker Compose:
 
-docker-compose up -d
-
-markdown
-Copy code
+    ```
+    docker-compose up -d
+    ```
 
 6. Примените миграции:
 
-docker-compose exec web python manage.py migrate
-
-markdown
-Copy code
+    ```
+    docker-compose exec web python manage.py migrate
+    ```
 
 7. Соберите статику:
 
-docker-compose exec web python manage.py collectstatic --no-input
-
-less
-Copy code
+    ```
+    docker-compose exec web python manage.py collectstatic --no-input
+    ```
 
 Теперь вы можете открыть [localhost](http://localhost) в вашем браузере и начать использовать Foodgram!
 
@@ -120,9 +107,6 @@ DB_HOST=db
 DB_PORT=5432
 SECRET_KEY=your_django_secret_key
 DEBUG=1
-
-markdown
-Copy code
 
 ## Ссылки
 

@@ -94,7 +94,7 @@ class Recipes(models.Model):
     )
     name = models.CharField(
         'Название рецепта',
-        max_length=200,
+        max_length=MAX_LENGTH_NAME,
         blank=False,
         help_text='Введите название рецепта',
     )
