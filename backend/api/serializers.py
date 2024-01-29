@@ -16,12 +16,10 @@ from users.models import Follow, User
 class UserReadSerializer(UserSerializer):
     """Серилизатор вывода пользователей."""
 
-    is_subscribed = serializers.SerializerMethodField()
-
     class Meta:
         model = User
         fields = ('email', 'id', 'username',
-                  'first_name', 'last_name')
+                  'first_name', 'last_name', 'is_subscribed')
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
@@ -45,9 +43,7 @@ class UserCreateSerializer(UserCreateSerializer):
         """Проверка username-символов."""
 
         if not re.match(r'^[\w.@+-]+$', value):
-            raise ValidationError(
-                'Username содержит недопустимые символы'
-            )
+            raise ValidationError('Username содержит недопустимые символы')
         return value
 
 
