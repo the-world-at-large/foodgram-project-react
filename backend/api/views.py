@@ -19,7 +19,7 @@ from api.serializers import (
     GetRecipesSerializer, IngredientsSerializer,
     RecipeCreateAndUpdateSerializer, SetNewPasswordSerializer,
     ShoppingCartSerializer, SubscriptionsShowSerializer, TagsSerializer,
-    UserCreateSerializer, UserReadSerializer
+    AddUserSerializer, UserReadSerializer
 )
 from api.utils import add_link, remove_link, shopping_cart_report
 
@@ -45,7 +45,7 @@ class UsersViewSet(CreateListRetrieveViewSet):
             return SetNewPasswordSerializer
         if self.action == 'subscribe':
             return CreateAndDeleteSubscriptionsSerializer
-        return UserCreateSerializer
+        return AddUserSerializer
 
     @action(
         methods=('get',),

@@ -16,6 +16,8 @@ from users.models import Follow, User
 class UserReadSerializer(UserSerializer):
     """Серилизатор вывода пользователей."""
 
+    is_subscribed = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = User
         fields = ('email', 'id', 'username',
@@ -32,7 +34,7 @@ class UserReadSerializer(UserSerializer):
         )
 
 
-class UserCreateSerializer(UserCreateSerializer):
+class AddUserSerializer(UserCreateSerializer):
     """Серилизатор создания пользователей."""
 
     class Meta(UserCreateSerializer.Meta):
