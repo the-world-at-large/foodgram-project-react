@@ -179,8 +179,8 @@ class RecipeCreateAndUpdateSerializer(serializers.ModelSerializer):
 
         ingredients = []
         for ingredient_data in ingredients_data:
-            ingredient_id = ingredient_data['ingredient'].id
-            amount = ingredient_data['amount']
+            ingredient_id = ingredient_data['id'].id
+            amount = ingredient_data['amount'] 
             ingredient = Ingredients.objects.get(id=ingredient_id)
             recipe_ingredient = RecipeIngredients(
                 recipe=recipe, ingredient=ingredient, amount=amount,
@@ -246,7 +246,7 @@ class CreateAndDeleteSubscriptionsSerializer(serializers.ModelSerializer):
         model = Follow
         fields = '__all__'
 
-    def validate(self, data, obj):
+    def validate(self, data):
         user = self.context['request'].user
         author_id = self.context['id']
         author = get_object_or_404(User, pk=author_id)
@@ -256,17 +256,17 @@ class CreateAndDeleteSubscriptionsSerializer(serializers.ModelSerializer):
                 'Нельзя подписаться на самого себя.'
             )
 
-        if obj.following.filter(user=user).exists():
+        if Follow.objects.filter(user=user, author=author).exists():
             raise serializers.ValidationError(
                 'Вы уже подписаны на этого пользователя.'
             )
 
-        data['author'] = author
         return data
 
     def create(self, validated_data):
         user = self.context['request'].user
-        author = validated_data['author']
+        author_id = self.context['id']
+        author = get_object_or_404(User, pk=author_id)
 
         return Follow.objects.create(user=user, author=author)
 
