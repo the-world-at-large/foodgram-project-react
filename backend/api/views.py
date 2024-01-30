@@ -105,19 +105,19 @@ class UsersViewSet(CreateListRetrieveViewSet):
         if request.method == 'POST':
             serializer = self.get_serializer(
                 data={'author': author.pk},
-                context={'request': request, 'id': pk}
+                context={'request': request}
             )
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(
-                {'message': 'Подписка успешно создана'},
+                {'message': 'Подписка успешно создана.'},
                 status=status.HTTP_201_CREATED,
             )
         subscription = get_object_or_404(
             Follow, user=request.user, author=author)
         subscription.delete()
         return Response(
-            {'message': 'Успешно отписан'},
+            {'message': 'Успешно отписан.'},
             status=status.HTTP_204_NO_CONTENT,
         )
 
