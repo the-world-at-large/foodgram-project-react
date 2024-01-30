@@ -101,22 +101,20 @@ class UsersViewSet(CreateListRetrieveViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def subscribe(self, request, pk=None):
+        author = get_object_or_404(User, pk=pk)
         if request.method == 'POST':
             serializer = self.get_serializer(
-                data=request.data,
+                data={'author': author.pk},
                 context={'request': request, 'id': pk}
             )
             serializer.is_valid(raise_exception=True)
-            response_data = serializer.save(id=pk)
+            serializer.save()
             return Response(
-                {'message': 'Подписка успешно создана',
-                 'data': response_data},
+                {'message': 'Подписка успешно создана'},
                 status=status.HTTP_201_CREATED,
             )
         subscription = get_object_or_404(
-            Follow, user=request.user,
-            author=get_object_or_404(User, pk=pk),
-        )
+            Follow, user=request.user, author=author)
         subscription.delete()
         return Response(
             {'message': 'Успешно отписан'},
