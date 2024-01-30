@@ -255,12 +255,15 @@ class CreateAndDeleteSubscriptionsSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 'Вы уже подписаны на этого пользователя.'
             )
+
+        data['user'] = user
+
         return data
 
     def create(self, validated_data):
         return Follow.objects.create(
             user=validated_data['user'],
-            author=validated_data['author']
+            author=validated_data['author'],
         )
 
 
