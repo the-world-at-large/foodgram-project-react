@@ -71,7 +71,7 @@ class UsersViewSet(CreateListRetrieveViewSet):
         if not user.check_password(old_password):
             return Response(
                 {'error': 'Неверный пароль'},
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_400_BAD_REQUEST
             )
         user.set_password(new_password)
         user.save()
@@ -87,37 +87,39 @@ class UsersViewSet(CreateListRetrieveViewSet):
     )
     def subscriptions(self, request):
         user = request.user
-        users = User.objects.filter(following__user=user).distinct()
+        subscriptions = user.follower.select_related('author')
+        users = [subscription.author for subscription in subscriptions]
         paginated_queryset = self.paginate_queryset(users)
         serializer = self.serializer_class(paginated_queryset,
                                            context={'request': request},
                                            many=True)
         return self.get_paginated_response(serializer.data)
 
-    @action(
-        detail=True,
-        methods=('post', 'delete'),
-        serializer_class=CreateAndDeleteSubscriptionsSerializer,
-        permission_classes=(IsAuthenticated,),
-    )
+    @action(detail=True,
+            methods=('post', 'delete'),
+            serializer_class=CreateAndDeleteSubscriptionsSerializer,
+            permission_classes=(IsAuthenticated,),
+            )
     def subscribe(self, request, pk=None):
-        author = get_object_or_404(User, pk=pk)
         if request.method == 'POST':
             serializer = self.get_serializer(
-                data={'author': author.pk},
-                context={'request': request}
+                data=request.data,
+                context={'request': request, 'id': pk},
             )
             serializer.is_valid(raise_exception=True)
-            serializer.save()
+            response_data = serializer.save(id=pk)
             return Response(
-                {'message': 'Подписка успешно создана.'},
+                {'message': 'Подписка успешно создана',
+                 'data': response_data},
                 status=status.HTTP_201_CREATED,
             )
         subscription = get_object_or_404(
-            Follow, user=request.user, author=author)
+            Follow, user=request.user,
+            author=get_object_or_404(User, pk=pk)
+        )
         subscription.delete()
         return Response(
-            {'message': 'Успешно отписан.'},
+            {'message': 'Успешно отписан'},
             status=status.HTTP_204_NO_CONTENT,
         )
 
