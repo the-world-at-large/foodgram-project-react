@@ -258,11 +258,10 @@ class CreateAndDeleteSubscriptionsSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data):
-        follow = Follow.objects.create(
+        return Follow.objects.create(
             user=validated_data['user'],
             author=validated_data['author']
         )
-        return follow
 
 
 class BaseItemOperationSerializer(serializers.Serializer):
