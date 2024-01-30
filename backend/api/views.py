@@ -107,12 +107,12 @@ class UsersViewSet(CreateListRetrieveViewSet):
                 context={'request': request, 'id': pk},
             )
             serializer.is_valid(raise_exception=True)
-            response_data = serializer.save(id=pk)
+            serializer.save(id=pk)
             return Response(
-                {'message': 'Подписка успешно создана',
-                 'data': response_data},
+                {'message': 'Подписка успешно создана'},
                 status=status.HTTP_201_CREATED,
             )
+
         subscription = get_object_or_404(
             Follow, user=request.user,
             author=get_object_or_404(User, pk=pk)
