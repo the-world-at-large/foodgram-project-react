@@ -218,7 +218,7 @@ class SubscriptionsShowSerializer(UserSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        user = self.context['request'].user
+        user = request.user
         if not request or not user.is_authenticated:
             return False
         return obj.following.filter(user=user).exists()
