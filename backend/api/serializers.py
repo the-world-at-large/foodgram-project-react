@@ -218,11 +218,15 @@ class SubscriptionsShowSerializer(UserSerializer):
 
     class Meta:
         model = User
-        fields = ('recipes_count', 'is_subscribed', 'recipes')
+        fields = (
+            'email', 'id', 'username',
+            'first_name', 'last_name',
+            'is_subscribed', 'recipes', 'recipes_count',
+        )
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        user = request.user
+        user = self.context['request'].user
         if not request or not user.is_authenticated:
             return False
         return obj.following.filter(user=user).exists()
