@@ -87,8 +87,8 @@ class UsersViewSet(CreateListRetrieveViewSet):
     )
     def subscriptions(self, request):
         user = request.user
-        subscriptions = user.follower.all().select_related('author')
-        paginated_queryset = self.paginate_queryset(subscriptions)
+        users = User.objects.filter(following__user=user).distinct()
+        paginated_queryset = self.paginate_queryset(users)
         serializer = self.serializer_class(paginated_queryset,
                                            context={'request': request},
                                            many=True)
