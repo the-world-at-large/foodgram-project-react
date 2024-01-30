@@ -239,36 +239,30 @@ class SubscriptionsShowSerializer(UserSerializer):
             return None
 
 
-class CreateAndDeleteSubscriptionsSerializer(serializers.ModelSerializer):
+class CreateAndDeleteSubscriptionsSerializer(serializers.Serializer):
     """Сериализатор добавления и удаления подписок пользователя."""
 
-    class Meta:
-        model = Follow
-        fields = '__all__'
-
     def validate(self, data):
-        user = self.context['request'].user
-        author_id = self.context['id']
+        user = self.context.get('request').user
+        author_id = self.context.get('id')
         author = get_object_or_404(User, pk=author_id)
 
         if user == author:
             raise serializers.ValidationError(
                 'Нельзя подписаться на самого себя.'
             )
-
         if Follow.objects.filter(user=user, author=author).exists():
             raise serializers.ValidationError(
                 'Вы уже подписаны на этого пользователя.'
             )
-
-        return data
+        return {'user': user, 'author': author}
 
     def create(self, validated_data):
-        user = self.context['request'].user
-        author_id = self.context['id']
-        author = get_object_or_404(User, pk=author_id)
-
-        return Follow.objects.create(user=user, author=author)
+        follow = Follow.objects.create(
+            user=validated_data['user'],
+            author=validated_data['author']
+        )
+        return follow
 
 
 class BaseItemOperationSerializer(serializers.Serializer):
