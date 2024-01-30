@@ -256,7 +256,7 @@ class CreateAndDeleteSubscriptionsSerializer(serializers.Serializer):
                 'Вы уже подписаны на этого пользователя.'
             )
 
-        data['user'] = user
+        data['user'], data['author'] = user, author
 
         return data
 
