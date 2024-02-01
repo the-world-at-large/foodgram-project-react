@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.db.models import Exists, OuterRef, Value
+from django.db.models import Exists, OuterRef
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
@@ -21,7 +21,7 @@ from api.serializers import (
     ShoppingCartSerializer, SubscriptionShowSerializer, TagSerializer,
     AddUserSerializer, UserReadSerializer
 )
-from api.utils import add_link, remove_link, shopping_cart_report
+from api.utils import add_link, shopping_cart_report
 
 from recipes.models import (
     Favorite, Ingredient, Recipe, ShoppingCart, Tag
@@ -86,9 +86,7 @@ class UserViewSet(CreateListRetrieveViewSet):
         pagination_class=PageNumberLimitPaginator
     )
     def subscriptions(self, request):
-        user = request.user
-        subscriptions = user.follower.select_related('author')
-        users = [subscription.author for subscription in subscriptions]
+        users = request.user.following.all()
         paginated_queryset = self.paginate_queryset(users)
         serializer = self.serializer_class(paginated_queryset,
                                            context={'request': request},
@@ -104,10 +102,10 @@ class UserViewSet(CreateListRetrieveViewSet):
         if request.method == 'POST':
             serializer = self.get_serializer(
                 data=request.data,
-                context={'request': request, 'id': pk},
+                context={'request': request},
             )
             serializer.is_valid(raise_exception=True)
-            serializer.save(id=pk)
+            serializer.save()
             return Response(
                 {'message': 'Подписка успешно создана'},
                 status=status.HTTP_201_CREATED,
@@ -125,7 +123,6 @@ class UserViewSet(CreateListRetrieveViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
     http_method_names = [
         'get',
@@ -145,80 +142,58 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return RecipeCreateAndUpdateSerializer
 
     def get_queryset(self):
-        return Recipe.objects.annotate(
-            is_favorited=Exists(
-                Favorite.objects.filter(
-                    user=self.request.user, recipe=OuterRef('id'))),
-            is_in_shopping_cart=Exists(
-                ShoppingCart.objects.filter(
-                    user=self.request.user,
-                    recipe=OuterRef('id')))
-        ).select_related('author').prefetch_related(
-            'tags',
-            'ingredients',
-            'shopping_list',
-            'favorites',
-        ) if self.request.user.is_authenticated else Recipe.objects.annotate(
-            is_in_shopping_cart=Value(False),
-            is_favorited=Value(False),
-        ).select_related('author').prefetch_related(
+        queryset = Recipe.objects.select_related('author').prefetch_related(
             'tags',
             'ingredients',
             'shopping_list',
             'favorites',
         )
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        if self.request.user.is_authenticated:
+            queryset = queryset.annotate(
+                is_favorited=Exists(
+                    Favorite.objects.filter(
+                        user=self.request.user, recipe=OuterRef('id')
+                    )
+                ),
+                is_in_shopping_cart=Exists(
+                    ShoppingCart.objects.filter(
+                        user=self.request.user, recipe=OuterRef('id')
+                    )
+                )
+            )
 
-    def perform_update(self, serializer):
-        serializer.save(author=self.request.user)
+        return queryset
 
     @action(
-        methods=('post', 'delete',),
+        methods=('post',),
         detail=True,
         serializer_class=AddFavoriteRecipeSerializer,
         permission_classes=(IsAuthenticated,),
     )
     def favorite(self, request, pk):
-        if request.method == 'POST':
-            return add_link(
-                self,
-                request,
-                Favorite,
-                'Рецепт уже добавлен в избранное.',
-                pk,
-            )
-        if request.method == 'DELETE':
-            return remove_link(
-                self,
-                request,
-                Favorite,
-                pk,
-            )
+        return add_link(
+            self,
+            request,
+            Favorite,
+            'Рецепт уже добавлен в избранное.',
+            pk,
+        )
 
     @action(
-        methods=('post', 'delete',),
+        methods=('post',),
         detail=True,
         serializer_class=ShoppingCartSerializer,
         permission_classes=(IsAuthenticated,),
     )
     def shopping_cart(self, request, pk):
-        if request.method == 'POST':
-            return add_link(
-                self,
-                request,
-                ShoppingCart,
-                'Рецепт уже добавлен в список покупок.',
-                pk,
-            )
-        if request.method == 'DELETE':
-            return remove_link(
-                self,
-                request,
-                ShoppingCart,
-                pk,
-            )
+        return add_link(
+            self,
+            request,
+            ShoppingCart,
+            'Рецепт уже добавлен в список покупок.',
+            pk,
+        )
 
     @action(
         detail=False,

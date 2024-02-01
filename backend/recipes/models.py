@@ -2,9 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, validate_slug
 from django.db import models
 
-from recipes.constants import (
-    MAX_LENGTH_NAME, MAX_LENGTH_MEASUREMENT_UNIT, MIN_COOKING_TIME
-)
+from recipes.constants import (MAX_LENGTH_NAME, MAX_LENGTH_MEASUREMENT_UNIT,
+                               MAX_LENGTH_COLOR, MIN_COOKING_TIME)
 
 User = get_user_model()
 
@@ -33,7 +32,7 @@ class Tag(models.Model):
         unique=True,
     )
     color = models.CharField(
-        max_length=7,
+        max_length=MAX_LENGTH_COLOR,
         choices=COLOR_CHOICES,
         blank=False,
         unique=True,

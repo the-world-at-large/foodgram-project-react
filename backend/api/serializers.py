@@ -8,8 +8,8 @@ from rest_framework import serializers
 
 from api.constants import MIN_AMOUNT, MIN_COOKING_TIME
 from recipes.models import (
-    Favorite, Ingredients, RecipeIngredient,
-    Recipes, ShoppingCart, Tag
+    Favorite, Ingredient, RecipeIngredient,
+    Recipe, ShoppingCart, Tag
 )
 from users.models import Follow, User
 
@@ -61,7 +61,7 @@ class IngredientSerializer(serializers.ModelSerializer):
     """Серилизатор работы с ингридиентами."""
 
     class Meta:
-        model = Ingredients
+        model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
 
 
@@ -79,7 +79,7 @@ class ShortRecipesShowSerializer(serializers.ModelSerializer):
     image = Base64ImageField(required=True, allow_null=False)
 
     class Meta:
-        model = Recipes
+        model = Recipe
         fields = (
             'id',
             'name',
@@ -121,7 +121,7 @@ class GetRecipeSerializer(serializers.ModelSerializer):
     image = Base64ImageField(required=True, allow_null=False)
 
     class Meta:
-        model = Recipes
+        model = Recipe
         fields = (
             'id',
             'tags',
@@ -139,11 +139,11 @@ class GetRecipeSerializer(serializers.ModelSerializer):
 class AddRecipeIngredienterializer(serializers.ModelSerializer):
     """Сериализатор добавления ингредиентов в рецепт."""
 
-    id = serializers.PrimaryKeyRelatedField(queryset=Ingredients.objects.all())
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     amount = serializers.IntegerField()
 
     class Meta:
-        model = Ingredients
+        model = Ingredient
         fields = ('id', 'amount')
 
     def validate_amount(self, value):
@@ -165,7 +165,7 @@ class RecipeCreateAndUpdateSerializer(serializers.ModelSerializer):
     image = Base64ImageField(required=True, allow_null=False)
 
     class Meta:
-        model = Recipes
+        model = Recipe
         fields = (
             'ingredients',
             'tags',
@@ -209,7 +209,7 @@ class RecipeCreateAndUpdateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         ingredients_data = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
-        recipe = Recipes.objects.create(**validated_data)
+        recipe = Recipe.objects.create(**validated_data)
         self.add_ingredients(recipe, ingredients_data)
         recipe.tags.set(tags)
         return recipe
@@ -223,30 +223,18 @@ class RecipeCreateAndUpdateSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class SubscriptionShowSerializer(UserSerializer):
+class SubscriptionShowSerializer(UserReadSerializer):
     """Сериализатор просмотра списка подписок пользователя."""
 
     recipes_count = serializers.IntegerField(
         source='recipes.count',
         read_only=True,
     )
-    is_subscribed = serializers.SerializerMethodField(read_only=True)
-    recipes = serializers.SerializerMethodField(read_only=True)
 
-    class Meta:
-        model = User
-        fields = (
-            'email', 'id', 'username',
-            'first_name', 'last_name',
+    class Meta(UserReadSerializer.Meta):
+        fields = UserReadSerializer.Meta.fields + (
             'is_subscribed', 'recipes', 'recipes_count',
         )
-
-    def get_is_subscribed(self, obj):
-        request = self.context.get('request')
-        user = self.context['request'].user
-        if not request or not user.is_authenticated:
-            return False
-        return obj.following.filter(user=user).exists()
 
     def get_recipes(self, obj):
         request = self.context.get('request')
@@ -314,7 +302,7 @@ class AddFavoriteRecipeSerializer(BaseItemOperationSerializer):
 
     class Meta:
         model = Favorite
-        item_model = Recipes
+        item_model = Recipe
         item_serializer = ShortRecipesShowSerializer
 
 
@@ -323,5 +311,5 @@ class ShoppingCartSerializer(BaseItemOperationSerializer):
 
     class Meta:
         model = ShoppingCart
-        item_model = Recipes
+        item_model = Recipe
         item_serializer = ShortRecipesShowSerializer

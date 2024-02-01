@@ -1,26 +1,32 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
+
+from users.constants import (
+    MAX_LENGTH_USERNAME, MAX_LENGTH_FIRST_NAME, MAX_LENGTH_LAST_NAME,
+    MAX_LENGTH_EMAIL, MAX_LENGTH_PASSWORD,
+)
 
 
 class User(AbstractUser):
     username = models.CharField(
-        max_length=150,
+        max_length=MAX_LENGTH_USERNAME,
         unique=True,
     )
     first_name = models.CharField(
-        max_length=150,
+        max_length=MAX_LENGTH_FIRST_NAME,
         blank=False,
     )
     last_name = models.CharField(
-        max_length=150,
+        max_length=MAX_LENGTH_LAST_NAME,
         blank=False,
     )
     email = models.EmailField(
-        max_length=255,
+        max_length=MAX_LENGTH_EMAIL,
         blank=False,
         unique=True,)
     password = models.CharField(
-        max_length=150,
+        max_length=MAX_LENGTH_PASSWORD,
         blank=False,
     )
     USERNAME_FIELD = 'email'
@@ -46,6 +52,15 @@ class Follow(models.Model):
         on_delete=models.CASCADE,
         related_name='following',
     )
+
+    def clean(self):
+        super().clean()
+        if self.user == self.author:
+            raise ValidationError('Нельзя подписаться на самого себя.')
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.user.username} подписан на {self.author.username}'
