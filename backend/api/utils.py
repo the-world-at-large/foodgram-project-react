@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 
-from recipes.models import RecipeIngredient, Recipes
+from recipes.models import RecipeIngredient, Recipe
 
 
 def shopping_cart_report(user):
@@ -32,7 +32,7 @@ def shopping_cart_report(user):
 def add_link(self, request, model, error_message, pk):
     '''Добавление связи.'''
 
-    recipe = get_object_or_404(Recipes, pk=pk)
+    recipe = get_object_or_404(Recipe, pk=pk)
     existing_relation = model.objects.filter(
         user=request.user,
         recipe=recipe,
