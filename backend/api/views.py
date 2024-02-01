@@ -21,7 +21,7 @@ from api.serializers import (
     ShoppingCartSerializer, SubscriptionShowSerializer, TagSerializer,
     AddUserSerializer, UserReadSerializer
 )
-from api.utils import add_link, shopping_cart_report
+from api.utils import add_link, remove_link, shopping_cart_report
 
 from recipes.models import (
     Favorite, Ingredient, Recipe, ShoppingCart, Tag
@@ -164,32 +164,48 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
 
     @action(
-        methods=('post',),
+        methods=('post', 'delete',),
         detail=True,
         serializer_class=AddFavoriteRecipeSerializer,
         permission_classes=(IsAuthenticated,),
     )
     def favorite(self, request, pk):
-        return add_link(
-            self,
-            request,
-            Favorite,
-            'Рецепт уже добавлен в избранное.',
-            pk,
+        if request.method == 'POST':
+            return add_link(
+                self,
+                request,
+                Favorite,
+                'Рецепт уже добавлен в избранное.',
+                pk,
+            )
+
+        return remove_link(
+                self,
+                request,
+                Favorite,
+                pk,
         )
 
     @action(
-        methods=('post',),
+        methods=('post', 'delete',),
         detail=True,
         serializer_class=ShoppingCartSerializer,
         permission_classes=(IsAuthenticated,),
     )
     def shopping_cart(self, request, pk):
-        return add_link(
+        if request.method == 'POST':
+            return add_link(
+                self,
+                request,
+                ShoppingCart,
+                'Рецепт уже добавлен в список покупок.',
+                pk,
+            )
+
+        return remove_link(
             self,
             request,
             ShoppingCart,
-            'Рецепт уже добавлен в список покупок.',
             pk,
         )
 

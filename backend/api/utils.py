@@ -55,3 +55,19 @@ def add_link(self, request, model, error_message, pk):
         self.serializer_class(recipe, context=context).data,
         status=status.HTTP_201_CREATED
     )
+
+
+def remove_link(self, request, model, pk):
+    '''Удаление связи.'''
+
+    recipe = get_object_or_404(Recipe, pk=pk)
+    relation = get_object_or_404(
+        model,
+        recipe=recipe,
+        user=request.user,
+    )
+    relation.delete()
+
+    return Response(
+        status=status.HTTP_204_NO_CONTENT,
+    )
