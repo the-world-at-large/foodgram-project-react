@@ -150,7 +150,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
 
         if self.request.user.is_authenticated:
-            queryset = queryset.annotate(
+            return queryset.annotate(
                 is_favorited=Exists(
                     Favorite.objects.filter(
                         user=self.request.user, recipe=OuterRef('id')
@@ -162,8 +162,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     )
                 )
             )
-
-        return queryset
 
     @action(
         methods=('post',),
