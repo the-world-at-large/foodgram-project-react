@@ -17,7 +17,7 @@ Foodgram - это онлайн-сервис для создания, поиск�
 1. Клонируйте репозиторий на локальную машину:
 
     ```
-    git clone https://github.com/your_usernam/foodgram.git
+    git clone https://github.com/the-world-at-large/foodgram.git
     ```
 
 2. Перейдите в папку проекта:
@@ -67,7 +67,7 @@ Foodgram - это платформа для обмена рецептами и �
 2. Склонируйте репозиторий на вашу локальную машину:
 
     ```
-    git clone https://github.com/your_username/foodgram.git
+    git clone https://github.com/the-world-at-large/foodgram.git
     ```
 
 3. Перейдите в папку проекта:
@@ -99,6 +99,7 @@ Foodgram - это платформа для обмена рецептами и �
 
 ## Пример .env файла
 
+```
 DB_ENGINE=django.db.backends.postgresql
 DB_NAME=your_database_name
 POSTGRES_USER=your_postgres_username
@@ -107,6 +108,7 @@ DB_HOST=db
 DB_PORT=5432
 SECRET_KEY=your_django_secret_key
 DEBUG=1
+```
 
 ## Ссылки
 

@@ -9,7 +9,7 @@ from recipes.constants import (
 User = get_user_model()
 
 
-class Tags(models.Model):
+class Tag(models.Model):
     """Модель тэгов."""
 
     RED = '#FF0000'
@@ -58,7 +58,7 @@ class Tags(models.Model):
         return self.name
 
 
-class Ingredients(models.Model):
+class Ingredient(models.Model):
     """Модель ингредиентов."""
 
     name = models.CharField(
@@ -82,7 +82,7 @@ class Ingredients(models.Model):
         return self.name
 
 
-class Recipes(models.Model):
+class Recipe(models.Model):
     """Модель рецептов."""
 
     author = models.ForeignKey(
@@ -110,14 +110,14 @@ class Recipes(models.Model):
         help_text='Прикрепите изображение',
     )
     ingredients = models.ManyToManyField(
-        Ingredients,
+        Ingredient,
         blank=False,
         related_name='recipes',
         verbose_name='Ингредиенты',
         help_text='Выберите ингредиенты',
     )
     tags = models.ManyToManyField(
-        Tags,
+        Tag,
         blank=False,
         related_name='recipes',
         verbose_name='Тэги',
@@ -148,17 +148,17 @@ class Recipes(models.Model):
         return self.name
 
 
-class RecipeIngredients(models.Model):
+class RecipeIngredient(models.Model):
     """Модель ингредиентов рецепта."""
 
     recipe = models.ForeignKey(
-        Recipes,
+        Recipe,
         on_delete=models.CASCADE,
         related_name='recipe_ingredients',
         verbose_name='Рецепт',
     )
     ingredient = models.ForeignKey(
-        Ingredients,
+        Ingredient,
         on_delete=models.CASCADE,
         related_name='ingredient_recipes',
         verbose_name='Ингредиент',
@@ -183,7 +183,7 @@ class ShoppingCart(models.Model):
         verbose_name='Владелец списка покупок',
     )
     recipe = models.ForeignKey(
-        Recipes,
+        Recipe,
         on_delete=models.CASCADE,
         null=True,
         related_name='shopping_list',
@@ -215,7 +215,7 @@ class Favorite(models.Model):
         verbose_name='Владелец списка избранных рецептов',
     )
     recipe = models.ForeignKey(
-        Recipes,
+        Recipe,
         on_delete=models.CASCADE,
         null=True,
         related_name='favorites',

@@ -2,20 +2,20 @@ from django import forms
 from django.contrib import admin
 
 from recipes.models import (
-    Favorite, Ingredients, RecipeIngredients,
-    Recipes, ShoppingCart, Tags
+    Favorite, Ingredient, RecipeIngredient,
+    Recipe, ShoppingCart, Tag
 )
 
 
 class RecipeIngredientInline(admin.TabularInline):
-    model = RecipeIngredients
+    model = RecipeIngredient
     extra = 1
     min_num = 1
 
 
 class RecipeAdminForm(forms.ModelForm):
     class Meta:
-        model = Recipes
+        model = Recipe
         fields = '__all__'
 
     def clean(self):
@@ -54,8 +54,8 @@ class TagAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
-admin.site.register(Recipes, RecipeAdmin)
-admin.site.register(Ingredients, IngredientAdmin)
-admin.site.register(Tags, TagAdmin)
+admin.site.register(Recipe, RecipeAdmin)
+admin.site.register(Ingredient, IngredientAdmin)
+admin.site.register(Tag, TagAdmin)
 admin.site.register(Favorite)
 admin.site.register(ShoppingCart)

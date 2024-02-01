@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django_filters import rest_framework as filters
 
-from recipes.models import Ingredients, Recipes, Tags
+from recipes.models import Ingredients, Recipes, Tag
 
 User = get_user_model()
 
@@ -22,11 +22,6 @@ class IngredientFilter(filters.FilterSet):
 class RecipeFilter(filters.FilterSet):
     """Фильтрация по избранному, автору, списку покупок и тегам."""
 
-    author = filters.ModelChoiceFilter(
-        field_name='author',
-        label='Автор',
-        queryset=User.objects.all(),
-    )
     is_favorited = filters.BooleanFilter(
         method='get_favorite',
         label='Избранные группы',
@@ -35,7 +30,7 @@ class RecipeFilter(filters.FilterSet):
         field_name='tags__slug',
         label='Тэги',
         to_field_name='slug',
-        queryset=Tags.objects.all(),
+        queryset=Tag.objects.all(),
     )
     is_in_shopping_cart = filters.BooleanFilter(
         method='get_is_in_shopping_cart',
@@ -46,9 +41,13 @@ class RecipeFilter(filters.FilterSet):
         model = Recipes
         fields = (
             'tags',
-            'author',
             'is_favorited',
             'is_in_shopping_cart',
+        )
+        author = filters.ModelChoiceFilter(
+            field_name='author',
+            label='Автор',
+            queryset=User.objects.all(),
         )
 
     def get_favorite(self, queryset, name, value):

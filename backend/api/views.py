@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Exists, OuterRef, Value
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Exists, OuterRef, Value
 
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import (
@@ -15,23 +15,23 @@ from api.filters import IngredientFilter, RecipeFilter
 from api.mixins import CreateListRetrieveViewSet
 from api.paginators import PageNumberLimitPaginator
 from api.serializers import (
-    CreateAndDeleteSubscriptionsSerializer, AddFavoriteRecipeSerializer,
-    GetRecipesSerializer, IngredientsSerializer,
+    CreateAndDeleteSubscriptionSerializer, AddFavoriteRecipeSerializer,
+    GetRecipeSerializer, IngredientSerializer,
     RecipeCreateAndUpdateSerializer, SetNewPasswordSerializer,
-    ShoppingCartSerializer, SubscriptionsShowSerializer, TagsSerializer,
+    ShoppingCartSerializer, SubscriptionShowSerializer, TagSerializer,
     AddUserSerializer, UserReadSerializer
 )
 from api.utils import add_link, remove_link, shopping_cart_report
 
 from recipes.models import (
-    Favorite, Ingredients, Recipes, ShoppingCart, Tags
+    Favorite, Ingredient, Recipe, ShoppingCart, Tag
 )
 from users.models import Follow
 
 User = get_user_model()
 
 
-class UsersViewSet(CreateListRetrieveViewSet):
+class UserViewSet(CreateListRetrieveViewSet):
     queryset = User.objects.all()
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('username',)
@@ -44,7 +44,7 @@ class UsersViewSet(CreateListRetrieveViewSet):
         if self.action == 'set_password':
             return SetNewPasswordSerializer
         if self.action == 'subscribe':
-            return CreateAndDeleteSubscriptionsSerializer
+            return CreateAndDeleteSubscriptionSerializer
         return AddUserSerializer
 
     @action(
@@ -81,7 +81,7 @@ class UsersViewSet(CreateListRetrieveViewSet):
     @action(
         methods=('get',),
         detail=False,
-        serializer_class=SubscriptionsShowSerializer,
+        serializer_class=SubscriptionShowSerializer,
         permission_classes=(IsAuthenticated,),
         pagination_class=PageNumberLimitPaginator
     )
@@ -97,7 +97,7 @@ class UsersViewSet(CreateListRetrieveViewSet):
 
     @action(detail=True,
             methods=('post', 'delete'),
-            serializer_class=CreateAndDeleteSubscriptionsSerializer,
+            serializer_class=CreateAndDeleteSubscriptionSerializer,
             permission_classes=(IsAuthenticated,),
             )
     def subscribe(self, request, pk=None):
@@ -124,8 +124,8 @@ class UsersViewSet(CreateListRetrieveViewSet):
         )
 
 
-class RecipesViewSet(viewsets.ModelViewSet):
-    queryset = Recipes.objects.all()
+class RecipeViewSet(viewsets.ModelViewSet):
+    queryset = Recipe.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
     http_method_names = [
         'get',
@@ -139,13 +139,13 @@ class RecipesViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
-            return GetRecipesSerializer
+            return GetRecipeSerializer
         if self.action == 'shopping_cart':
             return ShoppingCartSerializer
         return RecipeCreateAndUpdateSerializer
 
     def get_queryset(self):
-        return Recipes.objects.annotate(
+        return Recipe.objects.annotate(
             is_favorited=Exists(
                 Favorite.objects.filter(
                     user=self.request.user, recipe=OuterRef('id'))),
@@ -158,7 +158,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
             'ingredients',
             'shopping_list',
             'favorites',
-        ) if self.request.user.is_authenticated else Recipes.objects.annotate(
+        ) if self.request.user.is_authenticated else Recipe.objects.annotate(
             is_in_shopping_cart=Value(False),
             is_favorited=Value(False),
         ).select_related('author').prefetch_related(
@@ -234,17 +234,17 @@ class RecipesViewSet(viewsets.ModelViewSet):
         return response
 
 
-class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Ingredients.objects.all()
-    serializer_class = IngredientsSerializer
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
     permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
     pagination_class = None
 
 
-class TagsViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Tags.objects.all()
-    serializer_class = TagsSerializer
+class TagViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
     permission_classes = (AllowAny,)
     pagination_class = None

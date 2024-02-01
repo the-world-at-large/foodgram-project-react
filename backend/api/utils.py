@@ -1,19 +1,17 @@
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 
-from recipes.models import RecipeIngredients, Recipes, ShoppingCart
-
 from rest_framework import status
 from rest_framework.response import Response
 
+from recipes.models import RecipeIngredient, Recipes
+
 
 def shopping_cart_report(user):
-    '''Обработчик списка покупок.'''
-    shopping_cart_recipes = ShoppingCart.objects.filter(
-        user=user).values_list('recipe', flat=True)
+    """Обработчик списка покупок."""
 
-    ingredient_totals = RecipeIngredients.objects.filter(
-        recipe__in=shopping_cart_recipes,
+    ingredient_totals = RecipeIngredient.objects.filter(
+        recipe__shopping_cart__user=user,
     ).values(
         'ingredient__name', 'ingredient__measurement_unit',
     ).annotate(
@@ -35,16 +33,21 @@ def add_link(self, request, model, error_message, pk):
     '''Добавление связи.'''
 
     recipe = get_object_or_404(Recipes, pk=pk)
-    _, with_relation = model.objects.get_or_create(
+    existing_relation = model.objects.filter(
         user=request.user,
         recipe=recipe,
-    )
+    ).exists()
 
-    if not with_relation:
+    if existing_relation:
         return Response(
             {'errors': error_message},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+    model.objects.create(
+        user=request.user,
+        recipe=recipe,
+    )
 
     context = {'request': request}
 
@@ -55,7 +58,7 @@ def add_link(self, request, model, error_message, pk):
 
 
 def remove_link(self, request, model, pk):
-    '''Удаление связи.'''
+    """Удаление связи."""
 
     recipe = get_object_or_404(Recipes, pk=pk)
     relation = get_object_or_404(
