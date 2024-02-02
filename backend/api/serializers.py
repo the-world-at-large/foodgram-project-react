@@ -252,7 +252,7 @@ class SubscriptionShowSerializer(UserReadSerializer):
             return None
 
 
-class CreateAndDeleteSubscriptionSerializer(serializers.Serializer):
+class CreateAndDeleteSubscriptionsSerializer(serializers.Serializer):
     """Сериализатор добавления и удаления подписок пользователя."""
 
     def validate(self, data):
@@ -268,14 +268,17 @@ class CreateAndDeleteSubscriptionSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 'Вы уже подписаны на этого пользователя.'
             )
-
+        data['author'] = author
         return data
 
     def create(self, validated_data):
         user = self.context.get('request').user
-        author_id = validated_data.get('id')
-        author = get_object_or_404(User, pk=author_id)
-        return Follow.objects.create(user=user, author=author)
+        author = validated_data['author']
+        Follow.objects.create(user=user, author=author)
+        return {
+            'id': author.id,
+            'username': author.username,
+        }
 
 
 class BaseItemOperationSerializer(serializers.Serializer):
