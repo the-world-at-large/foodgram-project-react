@@ -252,7 +252,7 @@ class SubscriptionShowSerializer(UserReadSerializer):
             return None
 
 
-class CreateAndDeleteSubscriptionsSerializer(serializers.Serializer):
+class CreateAndDeleteSubscriptionSerializer(serializers.Serializer):
     """Сериализатор добавления и удаления подписок пользователя."""
 
     def validate(self, data):
