@@ -99,13 +99,14 @@ class UserViewSet(CreateListRetrieveViewSet):
             permission_classes=(IsAuthenticated,),
             )
     def subscribe(self, request, pk=None):
+        author = self.get_object()
         if request.method == 'POST':
             serializer = self.get_serializer(
-                data=request.data,
+                data={'id': author.id},
                 context={'request': request},
             )
             serializer.is_valid(raise_exception=True)
-            serializer.save(id=pk)
+            serializer.save()
             return Response(
                 {'message': 'Подписка успешно создана'},
                 status=status.HTTP_201_CREATED,
@@ -113,7 +114,7 @@ class UserViewSet(CreateListRetrieveViewSet):
 
         subscription = get_object_or_404(
             Follow, user=request.user,
-            author=get_object_or_404(User, pk=pk)
+            author=author,
         )
         subscription.delete()
         return Response(
