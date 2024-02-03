@@ -53,14 +53,10 @@ class Follow(models.Model):
         related_name='following',
     )
 
-    def clean(self):
-        super().clean()
+    def full_clean(self, *args, **kwargs):
+        super().full_clean(*args, **kwargs)
         if self.user == self.author:
             raise ValidationError('Нельзя подписаться на самого себя.')
-
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.user.username} подписан на {self.author.username}'

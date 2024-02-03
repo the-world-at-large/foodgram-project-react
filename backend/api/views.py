@@ -86,7 +86,8 @@ class UserViewSet(CreateListRetrieveViewSet):
         pagination_class=PageNumberLimitPaginator
     )
     def subscriptions(self, request):
-        subscriptions = request.user.follower.select_related('author')
+        subscriptions = request.user.follower.all().prefetch_related('author')
+
         paginated_queryset = self.paginate_queryset(subscriptions)
         serializer = self.serializer_class(paginated_queryset,
                                            context={'request': request},
@@ -119,7 +120,7 @@ class UserViewSet(CreateListRetrieveViewSet):
         )
         subscription.delete()
         return Response(
-            {'message': 'Успешно отписан.'},
+            {'message': 'Подписка успешно удалена.'},
             status=status.HTTP_204_NO_CONTENT,
         )
 
