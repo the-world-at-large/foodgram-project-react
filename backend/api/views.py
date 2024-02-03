@@ -86,7 +86,7 @@ class UserViewSet(CreateListRetrieveViewSet):
         pagination_class=PageNumberLimitPaginator
     )
     def subscriptions(self, request):
-        subscriptions = request.user.follower.all().prefetch_related('author')
+        subscriptions = User.objects.filter(following__user=request.user)
 
         paginated_queryset = self.paginate_queryset(subscriptions)
         serializer = self.serializer_class(paginated_queryset,

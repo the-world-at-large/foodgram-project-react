@@ -223,30 +223,20 @@ class RecipeCreateAndUpdateSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class SubscriptionShowSerializer(UserSerializer):
+class SubscriptionShowSerializer(UserReadSerializer):
     """Сериализатор просмотра списка подписок пользователя."""
 
     recipes_count = serializers.IntegerField(
         source='recipes.count',
         read_only=True,
     )
-    is_subscribed = serializers.SerializerMethodField(read_only=True)
     recipes = serializers.SerializerMethodField(read_only=True)
 
-    class Meta:
+    class Meta(UserReadSerializer):
         model = User
-        fields = (
-            'email', 'id', 'username',
-            'first_name', 'last_name',
+        fields = UserReadSerializer.Meta.fields + (
             'is_subscribed', 'recipes', 'recipes_count',
         )
-
-    def get_is_subscribed(self, obj):
-        request = self.context.get('request')
-        user = self.context['request'].user
-        if not request or not user.is_authenticated:
-            return False
-        return obj.following.filter(user=user).exists()
 
     def get_recipes(self, obj):
         request = self.context.get('request')
