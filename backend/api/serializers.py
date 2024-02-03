@@ -189,7 +189,6 @@ class RecipeCreateAndUpdateSerializer(serializers.ModelSerializer):
 
     def add_ingredients(self, recipe, ingredients_data):
         """Добавление ингредиентов в рецепт."""
-
         ingredients = []
         for ingredient_data in ingredients_data:
             ingredient = ingredient_data['id']
