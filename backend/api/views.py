@@ -105,7 +105,7 @@ class UserViewSet(CreateListRetrieveViewSet):
                 context={'request': request, 'id': pk},
             )
             serializer.is_valid(raise_exception=True)
-            response_data = serializer.save(id=pk)
+            response_data = serializer.save()
             return Response(
                 {'message': 'Подписка успешно создана.',
                  'data': response_data},
