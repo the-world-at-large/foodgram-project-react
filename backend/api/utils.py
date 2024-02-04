@@ -8,7 +8,7 @@ from recipes.models import RecipeIngredient, Recipe
 
 
 def shopping_cart_report(user):
-    """Обработчик списка покупок."""
+    """Обработчик корзины покупок."""
 
     ingredient_totals = RecipeIngredient.objects.filter(
         recipe__shopping_cart__user=user,
