@@ -200,11 +200,6 @@ class RecipeCreateAndUpdateSerializer(serializers.ModelSerializer):
 
         RecipeIngredient.objects.bulk_create(ingredients)
 
-    def delete_ingredients(self, recipe):
-        """Удаление ингредиентов из рецепта."""
-
-        RecipeIngredient.objects.filter(recipe=recipe).delete()
-
     def create(self, validated_data):
         ingredients_data = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
