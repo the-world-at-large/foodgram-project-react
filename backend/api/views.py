@@ -218,8 +218,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def download_shopping_cart(self, request):
-        user = get_object_or_404(User, username=request.user)
-        buy_list_text = shopping_cart_report(user)
+        buy_list_text = shopping_cart_report(request.user)
         response = HttpResponse(buy_list_text, content_type="text/plain")
         response['Content-Disposition'] = (
             'attachment; filename=shopping-list.txt'

@@ -11,7 +11,7 @@ def shopping_cart_report(user):
     """Обработчик корзины покупок."""
 
     ingredient_totals = RecipeIngredient.objects.filter(
-        recipe__shopping_cart__user=user,
+        recipe__shopping_list__user=user,
     ).values(
         'ingredient__name', 'ingredient__measurement_unit',
     ).annotate(
