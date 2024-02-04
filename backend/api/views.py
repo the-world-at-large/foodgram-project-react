@@ -183,10 +183,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
 
         return remove_link(
-                self,
-                request,
-                Favorite,
-                pk,
+            self,
+            request,
+            Favorite,
+            pk,
         )
 
     @action(
