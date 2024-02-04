@@ -43,11 +43,7 @@ class RecipeFilter(filters.FilterSet):
             'tags',
             'is_favorited',
             'is_in_shopping_cart',
-        )
-        author = filters.ModelChoiceFilter(
-            field_name='author',
-            label='Автор',
-            queryset=User.objects.all(),
+            'author',
         )
 
     def get_favorite(self, queryset, name, value):
