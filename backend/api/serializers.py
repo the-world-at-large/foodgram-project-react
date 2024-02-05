@@ -293,7 +293,6 @@ class BaseItemOperationSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 'Рецепт уже добавлен в избранное.'
             )
-        data = {'user': user, 'recipe': recipe}
         return data
 
     def create(self, validated_data):
