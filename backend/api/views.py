@@ -20,7 +20,7 @@ from api.serializers import (
     ShoppingCartSerializer, SubscriptionShowSerializer, TagSerializer,
     AddUserSerializer, UserReadSerializer
 )
-from api.utils import add_link, remove_link, shopping_cart_report
+from api.utils import shopping_cart_report
 
 from recipes.models import (
     Favorite, Ingredient, Recipe, ShoppingCart, Tag
@@ -139,6 +139,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return GetRecipeSerializer
         if self.action == 'shopping_cart':
             return ShoppingCartSerializer
+        if self.action == 'favorite':
+            return AddFavoriteRecipeSerializer
         return RecipeCreateAndUpdateSerializer
 
     def get_queryset(self):
@@ -166,48 +168,44 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         methods=('post', 'delete',),
         detail=True,
-        serializer_class=AddFavoriteRecipeSerializer,
         permission_classes=(IsAuthenticated,),
     )
     def favorite(self, request, pk):
+        context = {"request": request}
+        recipe = get_object_or_404(Recipe, id=pk)
+        data = {
+            'user': request.user,
+            'recipe': recipe,
+        }
+        serializer = self.get_serializer(data=data, context=context)
         if request.method == 'POST':
-            return add_link(
-                self,
-                request,
-                Favorite,
-                'Рецепт уже добавлен в избранное.',
-                pk,
-            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return remove_link(
-            self,
-            request,
-            Favorite,
-            pk,
-        )
+        return Response(serializer.delete(data),
+                        status=status.HTTP_204_NO_CONTENT)
 
     @action(
         methods=('post', 'delete',),
         detail=True,
-        serializer_class=ShoppingCartSerializer,
         permission_classes=(IsAuthenticated,),
     )
     def shopping_cart(self, request, pk):
+        context = {"request": request}
+        recipe = get_object_or_404(Recipe, id=pk)
+        data = {
+            'user': request.user,
+            'recipe': recipe,
+        }
+        serializer = self.get_serializer(data=data, context=context)
         if request.method == 'POST':
-            return add_link(
-                self,
-                request,
-                ShoppingCart,
-                'Рецепт уже добавлен в список покупок.',
-                pk,
-            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return remove_link(
-            self,
-            request,
-            ShoppingCart,
-            pk,
-        )
+        return Response(serializer.delete(data),
+                        status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=False,

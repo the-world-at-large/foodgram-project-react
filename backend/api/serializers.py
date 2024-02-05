@@ -286,21 +286,27 @@ class SubscriptionShowSerializer(UserReadSerializer):
 
 class BaseItemOperationSerializer(serializers.Serializer):
     """Базовый сериализатор для операций с элементами списка."""
-
     def validate(self, data):
-        item_id = data.get('id')
-        user = self.context['request'].user
-        if self.Meta.model.objects.filter(user=user, item_id=item_id).exists():
+        user = self.initial_data['user']
+        recipe = self.initial_data['recipe']
+        if self.Meta.model.objects.filter(recipe=recipe, user=user).exists():
             raise serializers.ValidationError(
-                'Этот объект уже есть в списке.'
+                'Рецепт уже добавлен в избранное.'
             )
+        data = {'user': user, 'recipe': recipe}
         return data
 
     def create(self, validated_data):
-        item_id = validated_data.get('id')
-        user = self.context['request'].user
-        item = get_object_or_404(self.Meta.item_model, pk=item_id)
-        return self.Meta.model.objects.create(user=user, item=item)
+        recipe = validated_data['recipe']
+        user = validated_data['user']
+        return self.Meta.model.objects.create(user=user, recipe=recipe)
+
+    def delete(self, data):
+        user = data['user']
+        recipe = data['recipe']
+        return get_object_or_404(self.Meta.model,
+                                 user=user,
+                                 recipe=recipe).delete()
 
 
 class AddFavoriteRecipeSerializer(BaseItemOperationSerializer):
