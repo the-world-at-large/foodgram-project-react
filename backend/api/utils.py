@@ -29,7 +29,7 @@ def shopping_cart_report(user):
 
 
 def add_link(self, request, model, error_message, pk):
-    '''Добавление связи.'''
+    """Добавление связи."""
 
     recipe = get_object_or_404(Recipe, pk=pk)
     existing_relation = model.objects.filter(
@@ -57,7 +57,7 @@ def add_link(self, request, model, error_message, pk):
 
 
 def remove_link(self, request, model, pk):
-    '''Удаление связи.'''
+    """Удаление связи."""
 
     recipe = get_object_or_404(Recipe, pk=pk)
     relation = get_object_or_404(
