@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.db.models import Exists, OuterRef
-
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
@@ -15,7 +14,7 @@ from api.filters import IngredientFilter, RecipeFilter
 from api.mixins import CreateListRetrieveViewSet
 from api.paginators import PageNumberLimitPaginator
 from api.serializers import (
-    CreateAndDeleteSubscriptionSerializer, AddFavoriteRecipeSerializer,
+    SubscriptionSerializer, AddFavoriteRecipeSerializer,
     GetRecipeSerializer, IngredientSerializer,
     RecipeCreateAndUpdateSerializer, SetNewPasswordSerializer,
     ShoppingCartSerializer, SubscriptionShowSerializer, TagSerializer,
@@ -43,8 +42,6 @@ class UserViewSet(CreateListRetrieveViewSet):
             return UserReadSerializer
         if self.action == 'set_password':
             return SetNewPasswordSerializer
-        if self.action == 'subscribe':
-            return CreateAndDeleteSubscriptionSerializer
         return AddUserSerializer
 
     @action(
@@ -97,7 +94,7 @@ class UserViewSet(CreateListRetrieveViewSet):
 
     @action(detail=True,
             methods=('post', 'delete'),
-            serializer_class=CreateAndDeleteSubscriptionSerializer,
+            serializer_class=SubscriptionSerializer,
             permission_classes=(IsAuthenticated,),
             )
     def subscribe(self, request, pk=None):

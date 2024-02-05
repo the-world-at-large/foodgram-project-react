@@ -218,8 +218,38 @@ class RecipeCreateAndUpdateSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
+class SubscriptionSerializer(serializers.ModelSerializer):
+    """Сериализатор подписки пользователя."""
+
+    class Meta:
+        model = Follow
+        fields = ('user', 'author')
+
+    def create(self, validated_data):
+        user = validated_data['user']
+        author = validated_data['author']
+
+        Follow.objects.create(user=user, author=author)
+        return {'success': True}
+
+    def validate(self, data):
+        user = data.get('user')
+        author = data.get('author')
+
+        if user == author:
+            raise serializers.ValidationError(
+                'Нельзя подписаться на самого себя.'
+            )
+
+        if user.following.filter(author=author).exists():
+            raise serializers.ValidationError(
+                'Вы уже подписаны на этого пользователя.'
+            )
+        return data
+
+
 class SubscriptionShowSerializer(UserReadSerializer):
-    """Сериализатор просмотра списка подписок пользователя."""
+    """Сериализатор просмотра подписок пользователя."""
 
     recipes_count = serializers.IntegerField(
         source='recipes.count',
@@ -247,32 +277,6 @@ class SubscriptionShowSerializer(UserReadSerializer):
             return int(recipes_limit) if recipes_limit else None
         except ValueError:
             return None
-
-
-class SubscriptionSerializer(serializers.ModelSerializer):
-    """Сериализатор подписки пользователя."""
-
-    def validate(self, data):
-        user = data.get('user')
-        author = data.get('author')
-
-        if user == author:
-            raise serializers.ValidationError(
-                'Нельзя подписаться на самого себя.'
-            )
-
-        if user.following.filter(author=author).exists():
-            raise serializers.ValidationError(
-                'Вы уже подписаны на этого пользователя.'
-            )
-        return data
-
-    def create(self, validated_data):
-        user = validated_data['user']
-        author = validated_data['author']
-
-        Follow.objects.create(user=user, author=author)
-        return {'success': True}
 
 
 class BaseItemOperationSerializer(serializers.Serializer):

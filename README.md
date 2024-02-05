@@ -95,7 +95,7 @@ Foodgram - это платформа для обмена рецептами и �
     docker-compose exec web python manage.py collectstatic --no-input
     ```
 
-Теперь вы можете открыть [localhost](http://localhost) в вашем браузере и начать использовать Foodgram!
+Теперь вы можете открыть [localhost](http://localhost:80) в вашем браузере и начать использовать Foodgram!
 
 ## Пример .env файла
 
@@ -107,14 +107,13 @@ POSTGRES_PASSWORD=your_postgres_password
 DB_HOST=db
 DB_PORT=5432
 SECRET_KEY=your_django_secret_key
-DEBUG=1
+DEBUG=False
 ```
 
 ## Ссылки
 
 - [Foodgram на GitHub](https://github.com/the-world-at-large/foodgram-project-react)
 - [Развернутый проект](http://sweetfoodgram.hopto.org)
-- [Бейдж GitHub о успешном деплое]()
 
 ## Автор
 
