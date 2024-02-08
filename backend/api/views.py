@@ -42,6 +42,8 @@ class UserViewSet(CreateListRetrieveViewSet):
             return UserReadSerializer
         if self.action == 'set_password':
             return SetNewPasswordSerializer
+        if self.action == 'subscribe':
+            return SubscriptionSerializer
         return AddUserSerializer
 
     @action(
@@ -94,26 +96,32 @@ class UserViewSet(CreateListRetrieveViewSet):
 
     @action(detail=True,
             methods=('post', 'delete'),
-            serializer_class=SubscriptionSerializer,
             permission_classes=(IsAuthenticated,),
             )
     def subscribe(self, request, pk=None):
+        context = {'request': request}
+        user = request.user.pk
+        author = get_object_or_404(User, pk=pk).pk
+        data = {
+            'user': user,
+            'author': author,
+        }
         if request.method == 'POST':
             serializer = self.get_serializer(
-                data=request.data,
-                context={'request': request, 'id': pk},
+                data=data,
+                context=context
             )
             serializer.is_valid(raise_exception=True)
             response_data = serializer.save()
             return Response(
                 {'message': 'Подписка успешно создана.',
-                 'data': response_data},
+                    'data': response_data},
                 status=status.HTTP_201_CREATED,
             )
 
         subscription = get_object_or_404(
-            Follow, user=request.user,
-            author=get_object_or_404(User, pk=pk)
+            Follow, user=user,
+            author=author
         )
         subscription.delete()
         return Response(
@@ -170,11 +178,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         detail=True,
         permission_classes=(IsAuthenticated,),
     )
-    def favorite(self, request, pk):
-        context = {"request": request}
-        recipe = get_object_or_404(Recipe, id=pk)
+    def favorite(self, request, pk=None):
+        context = {'request': request}
+        recipe = get_object_or_404(Recipe, pk=pk).pk
+        user = request.user.pk
         data = {
-            'user': request.user,
+            'user': user,
             'recipe': recipe,
         }
         serializer = self.get_serializer(data=data, context=context)
@@ -191,11 +200,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         detail=True,
         permission_classes=(IsAuthenticated,),
     )
-    def shopping_cart(self, request, pk):
-        context = {"request": request}
-        recipe = get_object_or_404(Recipe, id=pk)
+    def shopping_cart(self, request, pk=None):
+        context = {'request': request}
+        recipe = get_object_or_404(Recipe, pk=pk).pk
+        user = request.user.pk
         data = {
-            'user': request.user,
+            'user': user,
             'recipe': recipe,
         }
         serializer = self.get_serializer(data=data, context=context)

@@ -284,14 +284,15 @@ class SubscriptionShowSerializer(UserReadSerializer):
             return None
 
 
-class BaseItemOperationSerializer(serializers.Serializer):
+class BaseItemOperationSerializer(serializers.ModelSerializer):
     """Базовый сериализатор для операций с элементами списка."""
+
     def validate(self, data):
-        user = self.initial_data['user']
-        recipe = self.initial_data['recipe']
+        user = data.get('user')
+        recipe = data.get('recipe')
         if self.Meta.model.objects.filter(recipe=recipe, user=user).exists():
             raise serializers.ValidationError(
-                'Рецепт уже добавлен в избранное.'
+                'Рецепт уже добавлен в этот список.'
             )
         return data
 
@@ -315,6 +316,7 @@ class AddFavoriteRecipeSerializer(BaseItemOperationSerializer):
         model = Favorite
         item_model = Recipe
         item_serializer = ShortRecipesShowSerializer
+        fields = ('user', 'recipe')
 
 
 class ShoppingCartSerializer(BaseItemOperationSerializer):
@@ -324,3 +326,4 @@ class ShoppingCartSerializer(BaseItemOperationSerializer):
         model = ShoppingCart
         item_model = Recipe
         item_serializer = ShortRecipesShowSerializer
+        fields = ('user', 'recipe')
