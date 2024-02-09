@@ -110,7 +110,7 @@ SECRET_KEY=your_django_secret_key
 DEBUG=False
 ```
 
-![Ура!](https://github.com/the-world-at-large/foodgram-project-react/assets/122881387/6d18f643-f6c0-44f4-b796-91ce0ee1004f))
+![Ура!](https://github.com/the-world-at-large/foodgram-project-react/assets/122881387/6d18f643-f6c0-44f4-b796-91ce0ee1004f)
 
 ## Ссылки
 
