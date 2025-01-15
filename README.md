@@ -1,4 +1,4 @@
-# Foodgram
+# Foodgram [![Main Foodgram workflow](https://github.com/the-world-at-large/foodgram-project-react/actions/workflows/main.yml/badge.svg)](https://github.com/the-world-at-large/foodgram-project-react/actions/workflows/main.yml)
 
 Foodgram - это онлайн-сервис для создания, поиска и сохранения рецептов. Здесь вы можете найти разнообразные блюда, добавить их в избранное, а также поделиться своими кулинарными шедеврами с другими пользователями.
 
@@ -109,6 +109,8 @@ DB_PORT=5432
 SECRET_KEY=your_django_secret_key
 DEBUG=False
 ```
+
+![Ура!](https://github.com/the-world-at-large/foodgram-project-react/assets/122881387/6d18f643-f6c0-44f4-b796-91ce0ee1004f)
 
 ## Ссылки
 
