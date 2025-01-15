@@ -70,6 +70,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            set -x
             cd foodgram
             sudo docker-compose stop backend
             sudo docker-compose rm -f backend
