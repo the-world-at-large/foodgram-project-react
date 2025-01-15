@@ -63,6 +63,12 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+
+      # Временный шаг для вывода ключа
+      - name: Debug SSH Key
+        run: |
+          echo "SSH Key: ${{ secrets.SSH_KEY }}"
+
       - name: executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
@@ -70,7 +76,6 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            set -x
             cd foodgram
             sudo docker-compose stop backend
             sudo docker-compose rm -f backend
