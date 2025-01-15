@@ -63,12 +63,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-
-      # Временный шаг для вывода ключа
-      - name: Debug SSH Key
-        run: |
-          echo "SSH Key: ${{ secrets.SSH_KEY }}"
-
       - name: executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
