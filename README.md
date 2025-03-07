@@ -1,105 +1,106 @@
 # Foodgram [![Main Foodgram workflow](https://github.com/the-world-at-large/foodgram-project-react/actions/workflows/main.yml/badge.svg)](https://github.com/the-world-at-large/foodgram-project-react/actions/workflows/main.yml)
 
-Foodgram - это онлайн-сервис для создания, поиска и сохранения рецептов. Здесь вы можете найти разнообразные блюда, добавить их в избранное, а также поделиться своими кулинарными шедеврами с другими пользователями.
+Foodgram is an online service for creating, searching, and saving recipes. Here, you can discover a variety of dishes, add them to your favorites, and share your culinary masterpieces with other users.
 
-## Содержание
+## Contents
 
-1. [Установка и запуск проекта](#установка-и-запуск-проекта)
-2. [Описание проекта](#описание-проекта)
-3. [Инструкция по развертыванию](#инструкция-по-развертыванию)
-4. [Пример .env файла](#пример-env-файла)
-5. [Ссылки](#ссылки)
+1. [Installation and project setup](#installation-and-project-setup)
+2. [Project description](#project-description)
+3. [Deployment instructions](#deployment-instructions)
+4. [Example .env file](#example-env-file)
+5. [Links](#links)
 
-## Установка и запуск проекта
+## Installation and project setup
 
-Для запуска проекта на вашем локальном компьютере выполните следующие шаги:
+To run the project on your local machine, follow these steps:
 
-1. Клонируйте репозиторий на локальную машину:
+1. Clone the repository to your local machine:
 
     ```
     git clone https://github.com/the-world-at-large/foodgram.git
     ```
 
-2. Перейдите в папку проекта:
+2. Navigate to the project directory:
 
     ```
     cd foodgram
     ```
 
-3. Установите зависимости из файла requirements.txt:
+3. Install dependencies from the requirements.txt file:
 
     ```
     pip install -r requirements.txt
     ```
 
-4. Примените миграции:
+4. Apply migrations:
 
     ```
     python manage.py migrate
     ```
 
-5. Создайте суперпользователя:
+5. Create a superuser:
 
     ```
     python manage.py createsuperuser
     ```
 
-6. Запустите сервер разработки:
+6. Run the development server:
 
     ```
     python manage.py runserver
     ```
 
-Теперь вы можете открыть [localhost:8000](http://localhost:8000) в вашем браузере и начать использовать Foodgram!
+Now you can open [localhost:8000](http://localhost:8000) in your browser and start using Foodgram!
 
-## Описание проекта
+## Project description
 
-Foodgram - это платформа для обмена рецептами и ингредиентами. Основные функции проекта включают в себя:
+Foodgram is a platform for sharing recipes and ingredients. The main features include:
 
-- Поиск и просмотр рецептов различных блюд.
-- Возможность добавления рецептов в избранное.
-- Создание собственных рецептов с указанием ингредиентов и тегов.
-- Возможность подписки на других пользователей и просмотра их рецептов.
+- Searching and viewing recipes for various dishes.
+- Adding recipes to favorites.
+- Creating your own recipes with specified ingredients and tags.
+- Following other users and viewing their recipes.
 
-## Инструкция по развертыванию
+## Deployment instructions
 
-1. Установите Docker и Docker Compose на вашем компьютере.
-2. Склонируйте репозиторий на вашу локальную машину:
+1. Install Docker and Docker Compose on your computer.
+2. Clone the repository to your local machine:
 
     ```
     git clone https://github.com/the-world-at-large/foodgram.git
     ```
 
-3. Перейдите в папку проекта:
+3. Navigate to the project directory:
 
     ```
     cd foodgram
     ```
 
-4. Создайте файл .env и заполните его данными, указанными в примере ниже.
-5. Запустите Docker Compose:
+4. Create a .env file and fill it with the required data, as shown in the example below.
+5. Start Docker Compose:
 
     ```
     docker-compose up -d
     ```
 
-6. Примените миграции:
+6. Apply migrations:
 
     ```
     docker-compose exec web python manage.py migrate
     ```
 
-7. Соберите статику:
+7. Collect static files:
 
     ```
     docker-compose exec web python manage.py collectstatic --no-input
     ```
 
-Теперь вы можете открыть [localhost](http://localhost:80) в вашем браузере и начать использовать Foodgram!
+Now you can open [localhost](http://localhost:80) in your browser and start using Foodgram!
 
-## Пример .env файла
+## Example .env file
 
 ```
+
 DB_ENGINE=django.db.backends.postgresql
 DB_NAME=your_database_name
 POSTGRES_USER=your_postgres_username
@@ -108,19 +109,21 @@ DB_HOST=db
 DB_PORT=5432
 SECRET_KEY=your_django_secret_key
 DEBUG=False
+
 ```
 
-![Ура!](https://github.com/the-world-at-large/foodgram-project-react/assets/122881387/6d18f643-f6c0-44f4-b796-91ce0ee1004f)
 
-## Ссылки
+![Hooray!](https://github.com/the-world-at-large/foodgram-project-react/assets/122881387/6d18f643-f6c0-44f4-b796-91ce0ee1004f)
 
-- [Foodgram на GitHub](https://github.com/the-world-at-large/foodgram-project-react)
-- [Развернутый проект](http://sweetfoodgram.hopto.org)
+## Links
 
-## Автор
+- [Foodgram on GitHub](https://github.com/the-world-at-large/foodgram-project-react)
+- [Deployed project](http://sweetfoodgram.hopto.org)
 
-Автор: [the-world-at-large](https://github.com/the-world-at-large)
+## Author
 
-## Лицензия
+Author: [the-world-at-large](https://github.com/the-world-at-large)
+
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
